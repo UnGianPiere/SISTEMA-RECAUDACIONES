@@ -1,0 +1,41 @@
+.logo-group {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  margin-bottom: 1rem;
+}
+
+.logo {
+  height: 80px;
+  transition: transform 0.3s ease;
+}
+.logo:hover {
+  transform: scale(1.1);
+}
+
+body {
+  text-align: center;
+  background-color: #0f172a;
+  color: #f8fafc;
+  margin: 0;
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh; /* use height, not min-height */
+  overflow: hidden; /* prevent scroll */
+  padding: 0 1rem; /* horizontal padding only */
+  box-sizing: border-box;
+}
+
+.card {
+  margin-top: 1rem;
+}
+
+.footer {
+  margin-top: 2rem;
+  font-size: 0.875rem;
+  opacity: 0.6;
+}

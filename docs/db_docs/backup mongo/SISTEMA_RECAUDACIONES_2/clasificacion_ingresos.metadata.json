@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"},{"v":{"$numberInt":"2"},"key":{"codigo":{"$numberInt":"1"}},"name":"codigo_1","background":true,"unique":true}],"uuid":"8ce3f248dc0c45e0a9ac4562b84cfe07","collectionName":"clasificacion_ingresos","type":"collection"}

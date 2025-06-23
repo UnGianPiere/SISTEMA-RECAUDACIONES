@@ -1,0 +1,1 @@
+{"indexes":[{"v":{"$numberInt":"2"},"key":{"_id":{"$numberInt":"1"}},"name":"_id_"}],"uuid":"e48a8cd80986484fbdc7675ba4f139a6","collectionName":"cuentarecaudos","type":"collection"}
