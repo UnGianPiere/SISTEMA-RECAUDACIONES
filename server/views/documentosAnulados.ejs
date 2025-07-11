@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Documentos Anulados - Mayo 2025</title>
+    <style>
+        @page {
+            margin: 10mm;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h3, h4 {
+            text-align: center;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            page-break-inside: auto;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        th, td {
+            border: 1px solid #000;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 100;
+        }
+
+        .totales {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .stamp {
+            margin-top: 60px;
+            text-align: right;
+        }
+
+        .invisible {
+            border: 0;
+            padding: 3px;
+        }
+
+        .titulo {
+            width: 100%;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .gobierno-site {
+            font-size: 11px;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+<body>
+
+<%
+    const maxFilasPorPagina = 43;
+
+    // Filtramos solo reportes anulados
+    const anulados = reportes.filter(r => r.anulado === true);
+    const totalPaginas = Math.ceil(anulados.length / maxFilasPorPagina);
+
+    for (let pagina = 0; pagina < totalPaginas; pagina++) {
+        const inicio = pagina * maxFilasPorPagina;
+        const fin = inicio + maxFilasPorPagina;
+        const datosPagina = anulados.slice(inicio, fin);
+        const filasInvisibles = maxFilasPorPagina - datosPagina.length;
+%>
+
+<div style="display: flex; justify-content: space-between;">
+    <div class="gobierno-site">
+        Gobierno Regional Junín<br />ARCHIVO REGIONAL JUNÍN
+    </div>
+    <div>
+    <pre style="font-family: Arial, Helvetica, sans-serif; font-size: 11px; padding: 0; margin: 0;">
+Fecha   : <%=fechaActual%>
+Hora     : <%=horaActual%>
+Página  : <%= pagina + 1 %>
+    </pre>
+    </div>
+</div>
+
+<div class="titulo">DOCUMENTOS ANULADOS<br />MAYO - 2025</div>
+
+<div class="page">
+    <table>
+        <thead>
+            <tr>
+                <th colspan="3" style="width: 20%">Documento</th>
+                <th rowspan="2">Fecha</th>
+                <th rowspan="2" style="width: 8%">R.I.C</th>
+                <th rowspan="2">Nombre / Razón Social</th>
+            </tr>
+            <tr>
+                <th>Tipo</th>
+                <th>Serie</th>
+                <th>Número</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% datosPagina.forEach((reporte) => { %>
+                <tr>
+                    <td class="invisible">CC</td>
+                    <td class="invisible"><%= String(reporte.serie).padStart(3, '0') %></td>
+                    <td class="invisible"><%= String(reporte._id).padStart(6, '0') %></td>
+                    <td class="invisible"><%= reporte.fecha %></td>
+                    <td class="invisible"><%= String(reporte.numeroregistro).padStart(4, '0') %></td>
+                    <td class="invisible" style="text-align: left; padding-left: 10px;"><%= reporte.nombre %></td>
+                </tr>
+            <% }); %>
+
+            <% for (let i = 0; i < filasInvisibles; i++) { %>
+                <tr>
+                    <td class="invisible">&nbsp;</td>
+                    <td class="invisible">&nbsp;</td>
+                    <td class="invisible">&nbsp;</td>
+                    <td class="invisible">&nbsp;</td>
+                    <td class="invisible">&nbsp;</td>
+                    <td class="invisible">&nbsp;</td>
+                </tr>
+            <% } %>
+        </tbody>
+    </table>
+</div>
+
+<% if (pagina < totalPaginas - 1) { %>
+    <div class="page-break"></div>
+<% } %>
+
+<% } %>
+
+</body>
+</html>

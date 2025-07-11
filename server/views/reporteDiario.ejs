@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <title>Recibo de Ingreso</title>
+  <style>
+    .datos-impresion {
+      z-index: 100;
+      width: 150px;
+      position: absolute;
+      right: 5px;
+      top: 15px;
+      font-size: 11px;
+    }
+
+    .body {
+      font-family: Arial, sans-serif;
+      font-size: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th,
+    td {
+      border: 1px solid black;
+      padding: 6px;
+      text-align: center;
+      vertical-align: top;
+    }
+
+    .titulo {
+      text-align: center;
+      font-weight: bold;
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+
+    .header {
+      margin-bottom: 20px;
+    }
+
+    .tabla-concepto {
+      border: 1px solid black;
+    }
+
+    .tabla-concepto td,
+    .tabla-concepto th {
+      padding: 4px;
+      text-align: left;
+    }
+
+    .tabla-concepto tr:not(:first-child):not(:last-child):not(:nth-last-child(2)) td {
+      border-top: none;
+      border-bottom: none;
+    }
+
+    .tabla-concepto th {
+      border-bottom: 1px solid black;
+      font-weight: bold;
+    }
+
+    .tabla-concepto tr:first-child th {
+      border-top: none;
+    }
+
+    .tabla-concepto tr:last-child td {
+      text-align: center;
+      border-top: 1px solid black;
+    }
+
+    .tabla-concepto tr.total td {
+      text-align: right;
+      font-weight: bold;
+    }
+
+    .contabilidad {
+      text-align: center;
+      font-weight: bold;
+    }
+
+
+    table.datos-fecha-tabla {
+      margin-top: 10px;
+      text-align: left;
+      margin-left: 30;
+      width: auto;
+      border-collapse: collapse;
+    }
+
+    .datos-fecha-tabla td {
+      padding: 8px;
+      width: 30px;
+      text-align: center;
+    }
+
+    .datos-fecha-tabla .datos-fecha {
+      font-weight: bold;
+    }
+
+    .contenedor-tabla-fecha {
+      /* Tamaño fijo para el entorno */
+      font-family: sans-serif;
+      display: flex;
+      flex-direction: row-reverse;
+      padding-bottom: 10px;
+    }
+
+    .ocultar {
+      border: none;
+      padding: 0;
+      margin: 0;
+      background: transparent;
+    }
+
+    .contenedor-firmas {
+      width: 100%;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .firma {
+      display: flex;
+      justify-content: center;
+      align-items: flex-end;
+      height: 100px;
+      padding-bottom: 12px;
+      position: relative;
+
+    }
+
+    .divisor-horizontal {
+      height: 1px;
+      background-color: #000;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    .texto-firma {
+      text-align: center;
+      font-size: 12px;
+      font-weight: bold;
+    }
+
+    .tabla2-titulos {
+      text-align: center;
+      vertical-align: middle;
+      font-weight: bold;
+    }
+
+    .tabla2-texto {
+      text-align: center;
+      vertical-align: middle;
+    }
+  </style>
+</head>
+<div class="body">
+  <div class="header">
+
+    <div> <img src="data:image/png;base64,<%= logoBase64 %>" alt="" style="width: 55px; height: auto;"></div>
+   
+    <strong style="font-size: 10px;">Gobierno Regional Junín</strong>
+    <br />
+    <p style="margin: 0;font-size: 10px; ">ARCHIVO REGIONAL JUNÍN</p>
+    
+
+    <br>
+        <div class="titulo" style="font-family: 'Times New Roman', Times, serif; font-size: 18px;">RECIBO DE INGRESO</div>
+
+
+    <strong>R.U.C.:</strong> 20486021692</td>
+
+    <div class="datos-impresion">
+      <pre>
+        Fecha : <%=fechaNOW%>
+        Hora  : <%=hora%>
+        Página: 1
+      </pre>
+    </div>
+
+    <div class="contenedor-tabla-fecha">
+
+      <table class="datos-fecha-tabla">
+        <tr>
+          <td class="datos-fecha">NRO</td>
+          <td class="datos-fecha">DIA</td>
+          <td class="datos-fecha">MES</td>
+          <td class="datos-fecha">AÑO</td>
+        </tr>
+        <tr>
+          <td style="font-weight: bold;"><%= numero.toString().padStart(3, '0') %></td>
+          <td ><%=fecha.dia%></td>
+          <td ><%=fecha.mes%></td>
+          <td ><%=fecha.anio%></td>
+        </tr>
+      </table>
+    </div>
+
+
+    <table style="text-align: center;">
+
+      <thead>
+        <tr>
+          <th rowspan="2" style="width: 20%; text-align: center; vertical-align: middle;">CÓDIGO</th>
+          <th rowspan="2" style="width: 60%; text-align: center; vertical-align: middle;letter-spacing: 3px;">CONCEPTO
+          </th>
+          <th colspan="2" style="width: 20%; text-align: center; vertical-align: middle;letter-spacing: 2px;">IMPORTE
+          </th>
+        </tr>
+
+        <tr>
+          <td style="width: 10%; text-align: center">PARCIAL</td>
+          <td style="width: 10%;text-align: center">TOTAL</td>
+        </tr>
+      </thead>
+
+
+
+      <tr>
+        <td style="text-align: left;">1</td>
+        <td style="text-align: left;">INGRESOS PRESUPUESTARIOS</td>
+        <td></td>
+        <td><%=importe%></td>
+      </tr>
+
+      <tr>
+        <td style="text-align: left;">1.3</td>
+        <td style="text-align: left;">VENTA DE BIENES Y SERVICIOS Y DERECHOS ADMINISTRATIVOS</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">1.3.2</td>
+        <td style="text-align: left;">DERECHOS Y TASAS ADMINISTRATIVAS</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">1.3.210</td>
+        <td style="text-align: left;">OTROS DERECHOS ADMINISTRATIVOS</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">1.3.210.1</td>
+        <td style="text-align: left;">CERTIFICACIONES DIVERSAS</td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td style="text-align: left;">1.3.210.1.5</td>
+        <td style="text-align: left;">CERTIFICACIONES DIVERSAS</td>
+        <td><%=importe%></td>
+        <td></td>
+      </tr>
+
+      <tr>
+        <td colspan="4" style="height: 270px; padding-top: 30px; ">
+
+            <p>Recepción en caja de ARCHIVO REGIONAL JUNIN, la suma de <%=numeroletrado%>. <br>POR
+            CONCEPTO DE Según:
+              <br><br>
+
+
+<table style="border-collapse: collapse; border: none; padding: 0; margin: 0;">
+  <tr>
+    <% recibos.forEach((r, index) => { %>
+      <td style="padding: 0 10px; border: none; white-space: nowrap;">
+        <%= r.codigo %>&nbsp;&nbsp;<%= r.monto.toFixed(2) %>
+      </td>
+      <% if ((index + 1) % 4 === 0) { %>
+        </tr><tr>
+      <% } %>
+    <% }) %>
+  </tr>
+</table>
+
+
+
+            <br><br>
+            <p style="text-align: left;">
+              &nbsp;** Importe depositado a la Cta.Cte. Nº 381021866<br>
+              &nbsp;** REC. DIR. RECAUDADOS<br>
+              &nbsp;** N.D.B. Nº 0102
+            </p>
+      
+      </tr>
+      <tr class="total">
+        <td class="ocultar" style="letter-spacing: 3px;font-weight: bold; text-align: right;" colspan="3">TOTAL</td>
+        <td style="text-align: right;"><%=importe%></td>
+      </tr>
+    </table>
+
+    <table style="margin-top: 5px;">
+      <tbody>
+        <tr>
+          <td class="tabla2-titulos" colspan="2">CUENTA PRESUPUESTAL</td>
+          <td class="tabla2-titulos" colspan="4">CLASIFICACIÓN PROGRAMÁTICA</td>
+          <td rowspan="7" style="padding-left: 0; padding-right: 0; width: 30%;">
+
+            <div class="contenedor-firmas">
+              <div class="firma">
+                <div class="texto-firma">
+                  ---------------------------------<br />
+                  Jefe de Tesorería<br />
+                  (Sello y Firma)
+                </div>
+              </div>
+
+              <div class="divisor-horizontal"></div>
+
+              <div class="firma">
+                <div class="texto-firma">
+                  ---------------------------------<br />
+                  Recepción del Depósito<br />
+                  (Sello y Firma)
+                </div>
+              </div>
+            </div>
+
+          </td>
+        </tr>
+        <tr>
+          <td class="tabla2-texto">DEBE</td>
+          <td class="tabla2-texto">HABER</td>
+          <td class="tabla2-texto">SECTOR</td>
+          <td class="tabla2-texto">PLIEGO</td>
+          <td class="tabla2-texto">U. EJEC</td>
+          <td class="tabla2-texto">FTE. FTO.</td>
+        </tr>
+        <tr>
+          <td class="tabla2-texto"> </td>
+          <td class="tabla2-texto"> </td>
+          <td class="tabla2-texto">025</td>
+          <td class="tabla2-texto">450</td>
+          <td class="tabla2-texto">001</td>
+          <td class="tabla2-texto">09</td>
+        </tr>
+        <tr>
+          <td class="tabla2-titulos" colspan="6">CONTABILIDAD PATRIMONIAL</td>
+        </tr>
+        <tr>
+          <td class="tabla2-titulos">CTA. MAYOR</td>
+          <td class="tabla2-titulos"> SUB CUENTA</td>
+          <td colspan="2" class="tabla2-titulos">DEBE</td>
+          <td colspan="2" class="tabla2-titulos">HABER</td>
+        </tr>
+        <tr>
+          <td class="tabla2-texto">11</td>
+          <td class="tabla2-texto">1101.0101</td>
+          <td colspan="2" class="tabla2-texto"><%=importe%></td>
+          <td colspan="2" class="tabla2-texto"><%=importe%></td>
+        </tr>
+        <tr>
+          <td class="tabla2-texto">11</td>
+          <td class="tabla2-texto">1101.0101</td>
+          <td colspan="2" class="tabla2-texto"></td>
+          <td colspan="2" class="tabla2-texto"></td>
+        </tr>
+      </tbody>
+    </table>
+
+  </div>
+
+</html>

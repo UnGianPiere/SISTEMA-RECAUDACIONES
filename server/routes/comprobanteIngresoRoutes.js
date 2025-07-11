@@ -8,6 +8,12 @@ router.post('/', controller.createComprobante);
 // GET todos
 router.get('/', controller.getAllComprobantes);
 
+// POST crear comprobante con detalles
+router.post('/crear', controller.crearComprobanteConDetalles);
+
+//GET el ultimo numero de comprobante
+router.get('/ultimo', controller.getUltimoComprobante);
+
 // GET uno por ID
 router.get('/:id', controller.getComprobanteById);
 

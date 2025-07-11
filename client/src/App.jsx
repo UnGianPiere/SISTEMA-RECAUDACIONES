@@ -1,58 +1,46 @@
-import { useState } from 'react'
-import './App.css'
-import ReporteTabla from './components/ReporteTabla'
+"use client"
 
+import { Routes, Route, useLocation, useNavigate } from "react-router-dom"
+import Header from "./components/Header"
+import Sidebar from "./components/Sidebar"
 
-
+import RecaudacionSection from "./sections/RecaudacionSection"
+import ReportesSection from "./sections/ReportesSection"
+import TablasSection from "./sections/TablasSection"
+import HerramientasSection from "./sections/HerramientasSection"
+import AcercaDeSection from "./sections/AcercaDeSection"
+import TupaSeccion from "./sections/RecaudacionTupaSeccion"
 
 function App() {
-  const [reporteId, setReporteId] = useState("");
-  const [datos, setDatos] = useState(null);
+  const location = useLocation()
+  const navigate = useNavigate()
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!reporteId) return;
-
-    try {
-      const res = await fetch(`http://localhost:5000/api/reporte-diario/ingresos/${reporteId}`);
-      const data = await res.json();
-      setDatos(data);
-    } catch (error) {
-      console.error("Error al obtener reporte:", error);
-    }
-  };
+  const currentPath = location.pathname.replace("/", "") || "recaudacion"
 
   return (
-    <>
-      <div className="min-h-screen bg-gray-100 overflow-y-auto">
-        <form
-          onSubmit={handleSubmit}
-          className="w-full flex justify-center gap-4 p-6 bg-white shadow"
-        >
-          <input
-            type="number"
-            value={reporteId}
-            onChange={(e) => setReporteId(e.target.value)}
-            placeholder="Número de reporte"
-            className="border rounded px-4 py-2 w-60"
+    <div className="flex flex-col h-screen">
+      <Header />
+      <div className="flex flex-1 overflow-hidden">
+        <aside className="sticky top-0 p-4">
+          <Sidebar
+            activeSection={currentPath}
+            onNavigate={(section) => navigate(`/${section}`)}
           />
-          <button
-            type="submit"
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-          >
-            Buscar
-          </button>
-        </form>
+        </aside>
 
-        <main className="flex justify-center p-6">
-          {datos ? (
-            <ReporteTabla datos={datos} />
-          ) : (
-            <p className="text-gray-500">Ingrese un número de reporte para ver resultados.</p>
-          )}
+        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+          <Routes>
+            <Route path="/" element={<RecaudacionSection />} />
+            <Route path="/recaudacion" element={<RecaudacionSection />} />
+            <Route path="/reportes" element={<ReportesSection />} />
+            <Route path="/tablas" element={<TablasSection />} />
+            <Route path="/herramientas" element={<HerramientasSection />} />
+            <Route path="/acerca-de" element={<AcercaDeSection />} />
+            <Route path="/tupaseccion" element={<TupaSeccion />} />
+          </Routes>
         </main>
       </div>
-    </>
+    </div>
   )
 }
 

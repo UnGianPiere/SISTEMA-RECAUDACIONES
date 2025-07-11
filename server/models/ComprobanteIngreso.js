@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Counter = require('./counter.model');
 
 const comprobanteIngresoSchema = new mongoose.Schema({
     _id: { type: Number },  // Aquí usamos directamente _id como recing
@@ -15,22 +14,8 @@ const comprobanteIngresoSchema = new mongoose.Schema({
     igv: { type: Number, required: true },
     detalle: { type: String, trim: true }
 }, {
-    timestamps: true,
+    timestamps: false,
     versionKey: false
-});
-
-// Hook para autoincrementar _id
-comprobanteIngresoSchema.pre('save', async function (next) {
-    if (!this.isNew) return next();
-
-    const counter = await Counter.findByIdAndUpdate(
-        { _id: 'comprobanteIngreso' },   // Este será el nombre del contador
-        { $inc: { seq: 1 } },
-        { new: true, upsert: true }
-    );
-
-    this._id = counter.seq;
-    next();
 });
 
 module.exports = mongoose.model('ComprobanteIngreso', comprobanteIngresoSchema);

@@ -1,5 +1,5 @@
 const ComprobanteIngreso = require('../models/ComprobanteIngreso');
-
+const ComprobanteDetalle = require('../models/ComprobanteDetalle');
 // Crear comprobante
 exports.createComprobante = async (req, res) => {
     try {
@@ -11,6 +11,26 @@ exports.createComprobante = async (req, res) => {
     }
 };
 
+//Crear comprobante con detalles a la vez
+exports.crearComprobanteConDetalles = async (req, res) => {
+    const { comprobante, detalles } = req.body;
+
+    try {
+        const nuevoComprobante = new ComprobanteIngreso(comprobante);
+        await nuevoComprobante.save();
+
+        const detallesDocs = detalles.map(item => new ComprobanteDetalle(item));
+        await ComprobanteDetalle.insertMany(detallesDocs);
+
+        res.status(201).json({ message: "Guardado correctamente." });
+    } catch (error) {
+        console.error("❌ Error al guardar comprobante con detalles:", error);
+        res.status(500).json({ error: "No se pudo guardar." });
+    }
+};
+
+
+
 // Obtener todos
 exports.getAllComprobantes = async (req, res) => {
     try {
@@ -20,6 +40,18 @@ exports.getAllComprobantes = async (req, res) => {
         res.status(500).json({ error: err.message });
     }
 };
+
+//Obtener el último comprobante
+exports.getUltimoComprobante = async (req, res) => {
+    try {
+        const ultimo = await ComprobanteIngreso.findOne().sort({ _id: -1 });
+        if (!ultimo) return res.status(404).json({ error: 'No hay comprobantes' });
+        res.json(ultimo);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
 
 // Obtener por ID
 exports.getComprobanteById = async (req, res) => {

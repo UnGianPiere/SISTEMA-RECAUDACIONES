@@ -1,52 +1,45 @@
 require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
-const mongoose=require('mongoose')
-const clasificacion_ingresos=require('./routes/clasificacionRoutes')
+const mongoose = require('mongoose');
+const path = require('path');
+
+// Rutas
+const clasificacion_ingresos = require('./routes/clasificacionRoutes');
 const cuentasRecaudoRoutes = require('./routes/cuentasRecaudoRoutes');
 const TupaRoutes = require('./routes/tupaRoutes');
 const comprobanteIngresoRoutes = require('./routes/comprobanteIngresoRoutes');
 const comprobanteDetalleRoutes = require('./routes/comprobanteDetalleRoutes');
 const reporteDiarioRoutes = require('./routes/reporteDiarioRouters');
+const pdfRoutes = require('./routes/pdfRoutes');
+const reporteMensualRoutes = require('./routes/reporteMensualRouters');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
-const MONGO_URI=process.env.MONGO_URI;
+const MONGO_URI = process.env.MONGO_URI;
 
 // Conectar a MongoDB
-mongoose.connect(MONGO_URI).then(()=>{
-  console.log('Conexion exitosa');
-}).catch((err)=>{
-  console.error(`No se pudo conectar con la base de datos por ${err}`)
-})
+mongoose.connect(MONGO_URI)
+  .then(() => console.log('✅ Conexión exitosa a MongoDB'))
+  .catch(err => console.error('❌ Error al conectar con MongoDB:', err));
 
-// Middleware
-
+// Middlewares
 app.use(express.json());
 app.use(cors());
 
-// Routes
-app.use('/api/clasificacion',clasificacion_ingresos)
+// Rutas API
+app.use('/api/clasificacion', clasificacion_ingresos);
 app.use('/api/cuentas', cuentasRecaudoRoutes);
 app.use('/api/tupa', TupaRoutes);
 app.use('/api/comprobantes', comprobanteIngresoRoutes);
 app.use('/api/comprobantes-detalle', comprobanteDetalleRoutes);
 app.use('/api/reporte-diario', reporteDiarioRoutes);
+app.use('/api/pdf', pdfRoutes);
+app.use('/api/reporte-mensual', reporteMensualRoutes);
 
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error(err.stack);
-  res.status(500).send('Something broke!');
-});
 
-// Start server
+
+// Iniciar servidor
 app.listen(PORT, () => {
-  console.log(`🚀 Servidor en http://localhost:${PORT}`);
-}); 
-
-
-// Middleware para rutas no encontradas
-app.use((req, res, next) => {
-  console.warn(`🚫 Ruta no encontrada: ${req.method} ${req.originalUrl}`);
-  res.status(404).send(`Ruta no encontrada: ${req.method} ${req.originalUrl}`);
+  console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <title>Ingresos por Fuente - Mayo 2025</title>
+  <style>
+
+
+
+    body {
+      font-family: Arial, sans-serif;
+      padding: 40px;
+    }
+
+    .header {
+      text-align: center;
+      font-weight: bold;
+      margin-bottom: 20px;
+    }
+
+    .datos-superiores {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      border: 1px solid #000;
+    }
+
+    th,
+    td {
+      border: 1px solid #000;
+      padding: 6px;
+      text-align: left;
+    }
+
+    .table-title {
+      margin-top: 15px;
+      margin-bottom: 10px;
+      font-size: 15px;
+    }
+
+    .total-row td {
+      font-weight: bold;
+    }
+
+    .stamp {
+      float: right;
+      margin-top: 20px;
+    }
+
+    .stamp img {
+      width: 120px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="datos-superiores">
+    <div>Gobierno Regional Junín<br>ARCHIVO REGIONAL JUNÍN</div>
+    <div>
+      <pre style="font-family: Arial, Helvetica, sans-serif;">
+          Fecha : <%=fechaNOW%>
+          Hora   : <%=hora%>
+          Página: 1
+        </pre>
+    </div>
+  </div>
+
+  <div class="header" style="font-size: 15px;">
+    INFORMACION DE INGRESOS POR FUENTE DE FINANCIAMIENTO Y MONEDA<br>
+    DEL MES DE <%=fecha.mes%> - <%=fecha.anio%>
+  </div>
+
+  <table>
+    <tr>
+      <td>Sector: 25 PRESIDENCIA</td>
+      <td>Pliego: 450 Gobierno Regional Junín</td>
+      <td colspan="2">Unidad Ejecutora: 001 Gobierno Regional Junín</td>
+      <td style="width: 16%; text-align: center;" rowspan="2">Moneda<br> S/.</td>
+    </tr>
+    <tr>
+      <td style="text-align: center;">Sub Cuenta <br>0818</td>
+      <td>Fuente de <br>Financiamiento</td>
+      <td style="text-align: center;">Codigo <br>02</td>
+      <td>Nombre <br>Recursos Directamente Recaudados</td>
+    </tr>
+  </table>
+
+  <div class="table-title" style="font-size: 14px;">
+    A. DETALLE DE LA RECAUDACION O DESEMBOLSOS (SEGÚN EL MAESTRO DEL CLASIFICADOR DE INGRESOS)
+  </div>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="text-align: center; font-weight: 100;">Código</th>
+        <th style="text-align: center; font-weight: 100;">Denominación de los Recursos Públicos</th>
+        <th style="text-align: center; font-weight: 100;">Importe</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1.3.210.1.5</td>
+        <td>CERTIFICACIONES DIVERSAS</td>
+        <td style="text-align: right; font-weight: 100"><%=importe%></td>
+      </tr>
+      <tr class="total-row">
+        <td colspan="2" style="letter-spacing: 3px; font-weight: 100; text-align: center;">TOTAL</td>
+        <td style="text-align: right; font-weight: 100;"><%=importe%></td>
+      </tr>
+    </tbody>
+  </table>
+
+
+</body>
+
+</html>

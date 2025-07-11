@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <meta charset="UTF-8" />
+    <title>Documentos Emitidos - <%= fecha.mes %>
+            <%= fecha.anio %>
+    </title>
+    <style>
+        @page {
+            margin: 10mm;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        h3,
+        h4 {
+            text-align: center;
+            margin: 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 25px;
+            page-break-inside: auto;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            page-break-inside: avoid;
+            page-break-after: auto;
+        }
+
+        th,
+        td {
+            border: 1px solid #000;
+            text-align: center;
+            font-size: 12px;
+            font-weight: 100;
+        }
+
+        .titulo {
+            width: 100%;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .gobierno-site {
+            font-size: 11px;
+        }
+
+        .invisible {
+            border: 0;
+            padding: 3px;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .left {
+            text-align: left;
+            padding-left: 2%;
+        }
+
+        .page-break {
+            page-break-after: always;
+        }
+    </style>
+</head>
+
+<body>
+    <% const porPagina=43; const totalPaginas=Math.ceil(reportes.length / porPagina); let totalGeneral=0; %>
+        <% for (let pagina=0; pagina < totalPaginas; pagina++) { const inicio=pagina * porPagina; const fin=inicio +
+            porPagina; const datosPagina=reportes.slice(inicio, fin); %>
+
+            <!-- ENCABEZADO POR PÁGINA -->
+            <div style="display: flex; justify-content: space-between">
+                <div class="gobierno-site">
+                    Gobierno Regional Junín<br />ARCHIVO REGIONAL JUNÍN
+                </div>
+                <div>
+                    <pre style="
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 11px;
+            padding: 0;
+            margin: 0;
+          ">
+Fecha   : <%= fechaActual %>
+Hora     : <%= horaActual %>
+Página  : <%= pagina + 1 %>
+            </pre>
+                </div>
+            </div>
+
+            <!-- TÍTULO POR PÁGINA -->
+            <div class="titulo">
+                DOCUMENTOS EMITIDOS<br />
+                <%= fecha.mes %> - <%= fecha.anio %>
+            </div>
+
+            <!-- TABLA DE DATOS -->
+            <table>
+                <thead>
+                    <tr>
+                        <th rowspan="2" style="width: 5%">Sec</th>
+                        <th colspan="3" style="width: 20%">Documento</th>
+                        <th rowspan="2">Fecha</th>
+                        <th rowspan="2" style="width: 8%">R.I.C</th>
+                        <th rowspan="2">Nombre / Razón Social</th>
+                        <th rowspan="2" style="width: 5%">Anu</th>
+                        <th rowspan="2" style="width: 9%;">Monto</th>
+                    </tr>
+                    <tr>
+                        <th>Tipo</th>
+                        <th>Serie</th>
+                        <th>Número</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% datosPagina.forEach((reporte, i)=> { totalGeneral += reporte.total;
+                        %>
+                        <tr>
+                            <td class="invisible">03</td>
+                            <td class="invisible">CC</td>
+                            <td class="invisible">
+                                <%= String(reporte.serie).padStart(3, '0' ) %>
+                            </td>
+                            <td class="invisible">
+                                <%= String(reporte._id).padStart(6, '0' ) %>
+                            </td>
+                            <td class="invisible">
+                                <%= reporte.fecha %>
+                            </td>
+                            <td class="invisible">
+                                <%= String(reporte.numeroregistro).padStart(4, '0' ) %>
+                            </td>
+                            <td class="left" style="border: 0">
+                                <%= reporte.nombre %>
+                            </td>
+                            <td class="invisible">
+                                <%= reporte.anulado ? 'X' : '' %>
+                            </td>
+                            <td class="right" style="border: 0">
+                                <%= reporte.monto.toFixed(2) %>
+                            </td>
+                        </tr>
+
+                        <% }); %>
+                            <% if (pagina===totalPaginas - 1) { %>
+                                <!-- TOTAL SOLO EN LA ÚLTIMA PÁGINA -->
+                                <tr>
+                                    <td colspan="8" style="text-align: right; padding-right: 20%; border-right: 0">
+                                        Total:
+                                    </td>
+                                    <td style="width: 11%; border-left: 0; text-align: right">
+                                        <%= total.toFixed(2) %>
+                                    </td>
+                                </tr>
+                                <% } %>
+                </tbody>
+            </table>
+
+            <% if (pagina < totalPaginas - 1) { %>
+                <div class="page-break"></div>
+                <% } %>
+                    <% } %>
+                        <!-- FIN DEL BUCLE DE PAGINACIÓN -->
+</body>
+
+</html>

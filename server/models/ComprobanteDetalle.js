@@ -28,7 +28,7 @@ const comprobanteDetalleSchema = new mongoose.Schema({
         required: false
     }
 }, {
-    timestamps: true,
+    timestamps: false,
     versionKey: false
 });
 
