@@ -70,7 +70,7 @@ const generarPDF = async (req, res) => {
         };
 
         // === 2. Renderizar la plantilla EJS ===
-        const templatePath = path.join(__dirname, '../views/ReporteDiario.ejs');
+        const templatePath = path.join(__dirname, '../views/reporteDiario.ejs');
 
         if (!fs.existsSync(templatePath)) {
             console.error('❌ Plantilla no encontrada en:', templatePath);
