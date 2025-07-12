@@ -6,6 +6,7 @@ import Modal from "../components/modals/PDFModal"
 function ReportesSection() {
 
   const API =import.meta.env.VITE_API_URL;
+  
   const [modalVisible, setModalVisible] = useState(false);
   const [pdfUrl, setPdfUrl] = useState("");
   const [toast, setToast] = useState(null);

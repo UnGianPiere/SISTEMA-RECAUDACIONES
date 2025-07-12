@@ -31,6 +31,7 @@ function RecaudacionSection() {
   const [resultado, setResultado] = useState({ fecha: "", total: 0, comprobantes: [] })
   const [nuevoRecibo, setNuevoRecibo] = useState(null)
   const [modalNuevoRecibo, setModalNuevoRecibo] = useState(false)
+  
   const urlUri=import.meta.env.VITE_API_URL;
 
   const [datosRegistro, setDatosRegistro] = useState({

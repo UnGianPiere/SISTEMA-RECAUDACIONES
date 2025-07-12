@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export const RegistroModal = ({ visible, onClose, onRegistro }) => {
     if (!visible) return null;
 
-    const urlUri=import.meta.env.VITE_API_URL||"http://localhost:5000"
+    const urlUri=import.meta.env.VITE_API_URL
     const [dataTupa, setDataTupa] = useState({})
     const [cantidad, setCantidad] = useState()
 

@@ -15,7 +15,7 @@ const pdfRoutes = require('./routes/pdfRoutes');
 const reporteMensualRoutes = require('./routes/reporteMensualRouters');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 const MONGO_URI = process.env.MONGO_URI;
 
 // Conectar a MongoDB

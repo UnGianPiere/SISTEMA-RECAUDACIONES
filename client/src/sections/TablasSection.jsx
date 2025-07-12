@@ -9,11 +9,15 @@ export default function TablasSection() {
   const [modal, setModal] = useState(false)
   const [urlTupa, setUrlTupa] = useState("")
 
+  const API =import.meta.env.VITE_API_URL;
+
   const mostrarModal = (id) => {
+    
     setModal(true)
     setUrlTupa(`${API}/api/tupa/${id}`)
+
   }
-  const API =import.meta.env.VITE_API_URL;
+  
 
 
   const fetchTupaData = async () => {

@@ -17,7 +17,9 @@ function TupaSeccion() {
     const [rows, setRows] = useState([]);
     const [tablaData, setTablaData] = useState([]);
     const [detalles, setDetalle] = useState("")
+
     const API =import.meta.env.VITE_API_URL;
+    
     const handleGuardarImprimir = async () => {
         const Comprobante = generarComprobanteIngreso()
         const detalles = generarDetalles()
