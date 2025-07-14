@@ -22,7 +22,7 @@ function Header() {
               <h1 className="text-sm sm:text-lg lg:text-xl font-bold text-white truncate">
                 Gobierno Regional de Junín
               </h1>
-              <p className="text-xs sm:text-sm text-slate-200 truncate">Sistema de Recaudaciones</p>
+              <p className="text-xs sm:text-sm text-slate-200 truncate">Dirección Regional de Archivo</p>
             </div>
           </div>
 

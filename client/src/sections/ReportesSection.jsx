@@ -11,9 +11,14 @@ function ReportesSection() {
   const [toast, setToast] = useState(null)
   const [loading, setLoading] = useState(false)
 
+  // Obtener fecha actual
+  const fechaActual = new Date()
+  const mesActual = (fechaActual.getMonth() + 1).toString() // getMonth() devuelve 0-11
+  const añoActual = fechaActual.getFullYear().toString()
+
   const [filtros, setFiltros] = useState({
-    año: "2025",
-    mes: "05",
+    año: añoActual,
+    mes: mesActual,
   })
 
   const abrirModalConPDF = (tipoReporte) => {
@@ -29,8 +34,15 @@ function ReportesSection() {
     })
   }
 
-  const añoActual = new Date().getFullYear()
-  const añosRecientes = Array.from({ length: 5 }, (_, i) => añoActual - i)
+  const añosDisponibles = () => {
+    const añoInicio = 2021;
+    const años = [];
+    for (let año = añoActual; año >= añoInicio; año--) {
+      años.push(año);
+    }
+    return años;
+  }
+  const añosRecientes = añosDisponibles()
 
   const meses = [
     { value: "1", label: "Enero" },
@@ -47,12 +59,14 @@ function ReportesSection() {
     { value: "12", label: "Diciembre" },
   ]
 
+  const getFechaActual = () => `${meses.find((m) => m.value === filtros.mes)?.label} ${filtros.año}`
+
   const reportes = [
     {
       id: 1,
       titulo: "INFORMACIÓN DE INGRESOS POR FUENTE DE FINANCIAMIENTO Y MONEDA",
       descripcion: "Reporte detallado de ingresos clasificados por fuente de financiamiento",
-      fecha: "Mayo 2025",
+      fecha: getFechaActual(),
       tipo: "PDF",
       tipoAPI: "ingresos",
       color: "from-blue-500 to-blue-600",
@@ -71,7 +85,7 @@ function ReportesSection() {
       id: 2,
       titulo: "RESUMEN DE RECAUDACIÓN DE INGRESOS DE ACUERDO AL T-5",
       descripcion: "Resumen mensual de recaudación según formato T-5",
-      fecha: "Mayo 2025",
+      fecha: getFechaActual(),
       tipo: "PDF",
       tipoAPI: "recaudacion",
       color: "from-green-500 to-green-600",
@@ -90,7 +104,7 @@ function ReportesSection() {
       id: 3,
       titulo: "HOJA DE TRABAJO",
       descripcion: "Hoja de trabajo con cálculos y análisis mensual",
-      fecha: "Mayo 2025",
+      fecha: getFechaActual(),
       tipo: "PDF",
       tipoAPI: "hoja-trabajo",
       color: "from-purple-500 to-purple-600",
@@ -109,7 +123,7 @@ function ReportesSection() {
       id: 4,
       titulo: "DOCUMENTOS ANULADOS",
       descripcion: "Listado de documentos anulados en el período",
-      fecha: "Mayo 2025",
+      fecha: getFechaActual(),
       tipo: "PDF",
       tipoAPI: "doc-anulado",
       color: "from-red-500 to-red-600",
@@ -128,7 +142,7 @@ function ReportesSection() {
       id: 5,
       titulo: "DOCUMENTOS EMITIDOS",
       descripcion: "Registro completo de documentos emitidos",
-      fecha: "Mayo 2025",
+      fecha: getFechaActual(),
       tipo: "PDF",
       tipoAPI: "doc-emitido",
       color: "from-indigo-500 to-indigo-600",

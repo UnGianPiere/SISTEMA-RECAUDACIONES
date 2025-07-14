@@ -11,8 +11,8 @@ function RecaudacionSection() {
     fecha: new Date().toISOString().split("T")[0],
     sector: "03 ARCHIVO REGIONAL JUNIN",
     accion: "01 Captación de Ingresos",
-    fuenteFinanciamiento: "02 Recursos Directamente Recaudad",
-    cuentaCorriente: "01 381021866 BCP - DIR - RECAUDADOS",
+    fuenteFinanciamiento: "02 Recursos Directamente Recaudados",
+    cuentaCorriente: "01 381021866 REC - DIR - RECAUDADOS",
     concepto: "",
     tipoFormato: "Recibo de Ingreso a Caja",
     numeroRecibo: "",
@@ -31,7 +31,15 @@ function RecaudacionSection() {
   const [resultado, setResultado] = useState({ fecha: "", total: 0, comprobantes: [] })
   const [nuevoRecibo, setNuevoRecibo] = useState(null)
   const [modalNuevoRecibo, setModalNuevoRecibo] = useState(false)
-  const [loadingPDF, setLoadingPDF]=useState(false)
+
+  const [dataEdit, setDataEdit] = useState({
+    nombre: "",
+    direccion: "",
+    documento: ""
+  })
+
+  const [loadingPDF, setLoadingPDF] = useState(false)
+
 
   const urlUri = import.meta.env.VITE_API_URL
 
@@ -76,6 +84,15 @@ function RecaudacionSection() {
 
   const handleContinuar = (e) => {
     e.preventDefault()
+    // Validar longitud del documento
+    if (datosRegistro.tipoDocumento === "dni" && datosRegistro.numeroDocumento.length !== 8) {
+      alert("El DNI debe tener exactamente 8 dígitos");
+      return;
+    }
+    if (datosRegistro.tipoDocumento === "ruc" && datosRegistro.numeroDocumento.length !== 11) {
+      alert("El RUC debe tener exactamente 11 dígitos");
+      return;
+    }
     const datosAEnviar = {
       ...datosRegistro,
       ultimoreg: ultimoRegistro,
@@ -87,11 +104,74 @@ function RecaudacionSection() {
 
   const handleChange = (e) => {
     const { name, value } = e.target
+    if (name === "numeroDocumento") {
+      const tipo = datosRegistro.tipoDocumento;
+      if (tipo === "dni" && value.length > 8) return;
+      if (tipo === "ruc" && value.length > 11) return;
+    }
     setDatosRegistro((prev) => ({
       ...prev,
       [name]: value,
     }))
   }
+
+
+  // Estado para el formulario de edición
+  const [editForm, setEditForm] = useState({ nombre: '', direccion: '', documento: '' })
+
+  // Cuando se abre el modal de editar, inicializa el formulario con los datos seleccionados
+  const handleEdit = (item) => {
+    const doc = resultado.comprobantes[filaSeleccionada]
+    setEditForm({
+      nombre: doc?.nombre || '',
+      direccion: doc?.direccion || '',
+      documento:
+        doc?.dni && doc?.dni !== '0' && doc?.dni.length === 8
+          ? doc.dni
+          : doc?.ruc && doc?.ruc !== '0' && doc?.ruc.length === 11
+          ? doc.ruc
+          : '',
+    })
+    abrirModal('editar', doc)
+  }
+
+  // Manejar cambios en los campos del modal de edición
+  const handleEditData = (e) => {
+    const { name, value } = e.target
+    if (name === "documento") {
+      // Determinar el tipo de documento original
+      const tieneRuc = datosSeleccion?.ruc && datosSeleccion.ruc !== '0';
+      const tieneDni = datosSeleccion?.dni && datosSeleccion.dni !== '0';
+      
+      if (tieneRuc) {
+        // Si originalmente era RUC, solo permitir 11 dígitos
+        if (value.length > 11) return;
+      } else if (tieneDni) {
+        // Si originalmente era DNI, solo permitir 8 dígitos
+        if (value.length > 8) return;
+      }
+    }
+    setEditForm((prev) => ({ ...prev, [name]: value }))
+  }
+
+  // Función que se ejecuta al guardar
+  const handleEditSave = (e) => {
+    e.preventDefault()
+    // Aquí puedes hacer una petición a la API si lo deseas
+    // Por ahora solo actualiza el estado local para mostrar el cambio
+    setDatosSeleccion((prev) => ({
+      ...prev,
+      nombre: editForm.nombre,
+      direccion: editForm.direccion,
+      dni: editForm.documento.length === 8 ? editForm.documento : prev?.dni,
+      ruc: editForm.documento.length === 11 ? editForm.documento : prev?.ruc,
+    }))
+    // Aquí puedes ejecutar cualquier función adicional que desees
+    // Por ejemplo:
+    // actualizarComprobanteEnBackend(editForm)
+    cerrarModal()
+  }
+
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -115,9 +195,47 @@ function RecaudacionSection() {
     abrirModal("cuenta")
   }
 
-  const handleEdit = (item) => {
-    abrirModal("editar", resultado.comprobantes[filaSeleccionada])
+  // Nuevo handler para guardar edición de comprobante
+  const handleEditModal = async (e) => {
+    e.preventDefault();
+    if (!datosSeleccion) return;
 
+    // Determinar el tipo de documento original
+    const tieneRuc = datosSeleccion?.ruc && datosSeleccion.ruc !== '0';
+    const tieneDni = datosSeleccion?.dni && datosSeleccion.dni !== '0';
+
+    // Validar que se mantenga el mismo tipo de documento con la longitud correcta
+    if (tieneRuc && editForm.documento.length !== 11) {
+      alert("El RUC debe tener exactamente 11 dígitos");
+      return;
+    }
+    if (tieneDni && editForm.documento.length !== 8) {
+      alert("El DNI debe tener exactamente 8 dígitos");
+      return;
+    }
+
+    const id = datosSeleccion.id;
+    const updateData = {
+      nombre: editForm.nombre,
+      direccion: editForm.direccion,
+      dni: tieneDni ? editForm.documento : datosSeleccion.dni,
+      ruc: tieneRuc ? editForm.documento : datosSeleccion.ruc,
+    };
+    try {
+      await axios.put(`${urlUri}/api/comprobantes/${id}`, updateData);
+      // Actualiza el estado local para reflejar el cambio en la tabla
+      setResultado((prev) => ({
+        ...prev,
+        comprobantes: prev.comprobantes.map((c) =>
+          c.id === id ? { ...c, ...updateData } : c
+        ),
+      }));
+      setDatosSeleccion((prev) => ({ ...prev, ...updateData }));
+      cerrarModal();
+      navigate(0)
+    } catch (error) {
+      console.error('Error al actualizar comprobante:', error);
+    }
   }
 
   const handlePrint = async () => {
@@ -151,7 +269,6 @@ function RecaudacionSection() {
     const valor = typeof input === "string" ? input.trim() : input?.target?.value.trim()
     if (!valor) return
     setPrintNum(valor)
-
     try {
       setLoading(true)
       const response = await axios.get(`${urlUri}/api/reporte-diario/ingresos/${valor}`)
@@ -269,8 +386,19 @@ function RecaudacionSection() {
 
       <div className="bg-white rounded-lg shadow-md flex-1 flex flex-col min-h-0 border border-gray-200 p-5">
         {/* Encabezado: Título y Controles de Recibo */}
-        <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-slate-50 to-gray-50 rounded-[5px]">
-          <h2 className="text-lg font-bold text-gray-800">Recibo de Ingreso a Caja</h2>
+        <div className="flex items-center justify-between p-3 border-b border-gray-200 bg-gradient-to-r from-slate-50 via-blue-50 to-slate-50 rounded-[5px]">
+
+          <div className="flex items-center gap-3">
+            <img
+              src="/icon/Escudo.png"
+              className="w-8 h-8 sm:w-12 sm:h-12 transition-transform hover:scale-105"
+              alt="Escudo"
+            />
+            <h2 className="text-lg font-bold text-gray-800">Recaudación</h2>
+          </div>
+
+
+
           <div className="flex flex-col space-y-3 lg:flex-row lg:space-y-0 lg:space-x-3 items-center">
             <div className="flex items-center space-x-1">
               <label className="text-xs font-medium text-gray-700">N° Recibo</label>
@@ -436,7 +564,7 @@ function RecaudacionSection() {
           <div className="flex-1 overflow-hidden border border-gray-200 rounded-lg shadow-sm">
             <div className="h-full overflow-y-auto">
               <table className="min-w-full text-xs border-collapse bg-white">
-                <thead className="bg-gradient-to-r from-blue-50 to-blue-100 sticky top-0">
+                <thead className="bg-gradient-to-r from-blue-50 to-blue-100  top-0">
                   <tr>
                     <th className="px-1 py-1 border-b border-blue-200 font-semibold text-blue-800 text-left">TD</th>
                     <th className="px-1 py-1 border-b border-blue-200 font-semibold text-blue-800 text-left">Serie</th>
@@ -526,7 +654,7 @@ function RecaudacionSection() {
             <>
               <h2 className="text-lg font-bold mb-3 text-gray-800">Editar Comprobante</h2>
               <div className="p-3 bg-white rounded-lg">
-                <form className="space-y-3">
+                <form onSubmit={handleEditModal} className="space-y-3">
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
                       <label className="block text-xs font-medium text-gray-700 mb-1">Nro</label>
@@ -542,30 +670,30 @@ function RecaudacionSection() {
                     <label className="block text-xs font-medium text-gray-700 mb-1">Nombre</label>
                     <input
                       type="text"
-                      value={datosSeleccion?.nombre || ""}
+                      name="nombre"
+                      value={editForm.nombre}
                       className="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      onChange={handleEditData}
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Documento</label>
                     <input
                       type="text"
-                      value={
-                        datosSeleccion?.dni && datosSeleccion?.dni !== "0" && datosSeleccion?.dni.length === 8
-                          ? datosSeleccion.dni
-                          : datosSeleccion?.ruc && datosSeleccion?.ruc !== "0" && datosSeleccion?.ruc.length === 11
-                            ? datosSeleccion.ruc
-                            : ""
-                      }
+                      name="documento"
+                      value={editForm.documento}
                       className="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      onChange={handleEditData}
                     />
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Dirección</label>
                     <input
                       type="text"
-                      value={datosSeleccion?.direccion || ""}
+                      name="direccion"
+                      value={editForm.direccion}
                       className="w-full border border-gray-300 rounded p-1.5 text-xs focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
+                      onChange={handleEditData}
                     />
                   </div>
                   <div className="flex gap-2 pt-2">
@@ -576,7 +704,6 @@ function RecaudacionSection() {
                       Guardar
                     </button>
                     <button
-                      type="button"
                       onClick={cerrarModal}
                       className="bg-gradient-to-r from-red-500 to-red-600 hover:from-red-600 hover:to-red-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-all duration-200 shadow-sm hover:shadow"
                     >

@@ -402,7 +402,7 @@ function HerramientasSection() {
                 onClick={() => setActiveTab(tool.id)}
                 className={`flex items-center space-x-2 p-2 rounded-lg text-left transition-all duration-200 ${
                   activeTab === tool.id
-                    ? `bg-gradient-to-r ${tool.color} text-white shadow-md transform scale-105`
+                    ? `bg-gradient-to-r ${tool.color} text-white shadow-md transform`
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                 }`}
               >

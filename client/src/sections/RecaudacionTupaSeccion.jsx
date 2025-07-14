@@ -20,6 +20,12 @@ function TupaSeccion() {
   const API = import.meta.env.VITE_API_URL
 
   const handleGuardarImprimir = async () => {
+    // Validar que haya al menos un registro en la tabla
+    if (tablaData.length === 0) {
+      alert("Debe agregar al menos un servicio antes de guardar")
+      return
+    }
+
     const Comprobante = generarComprobanteIngreso()
     const detalles = generarDetalles()
     const idComprobante = Comprobante.numeroregistro
@@ -139,7 +145,7 @@ function TupaSeccion() {
 
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
         {/* Header compacto */}
-        <div className="flex flex-col sm:flex-row justify-between items-center p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-slate-50 via-blue-50 to-slate-50">
+        <div className="flex flex-col sm:flex-row justify-between items-center p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-slate-50 via-blue-100 to-slate-50">
           <div className="flex items-center space-x-2 sm:space-x-3 mb-2 sm:mb-0">
             <img
               src="/icon/Escudo.png"
@@ -238,7 +244,7 @@ function TupaSeccion() {
           <div className="overflow-x-auto rounded-lg border border-gray-200">
             <div className="max-h-48 overflow-y-auto">
               <table className="min-w-full divide-y divide-gray-200 bg-white text-xs">
-                <thead className="bg-gradient-to-r from-slate-100 to-gray-100 sticky top-0">
+                <thead className="bg-gradient-to-r from-slate-100 to-gray-100 top-0">
                   <tr>
                     <th className="px-2 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">Código</th>
                     <th className="px-2 py-2 text-center font-bold text-gray-700 uppercase tracking-wider">Cant.</th>
@@ -334,7 +340,12 @@ function TupaSeccion() {
 
               <button
                 onClick={handleGuardarImprimir}
-                className="w-full  bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-2 py-1 rounded-lg text-xs font-bold shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
+                disabled={tablaData.length === 0}
+                className={`w-full px-2 py-1 rounded-lg text-xs font-bold shadow-md transition-all duration-200 flex items-center justify-center space-x-1 ${
+                  tablaData.length === 0 
+                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed' 
+                  : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white hover:shadow-lg'
+                }`}
               >
                 <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path

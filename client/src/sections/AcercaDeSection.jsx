@@ -34,20 +34,6 @@ function AcercaDeSection() {
         </svg>
       ),
     },
-    {
-      id: "support",
-      label: "Soporte",
-      icon: (
-        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192L5.636 18.364M12 12h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
-      ),
-    },
   ]
 
   const renderContent = () => {
@@ -105,8 +91,8 @@ function AcercaDeSection() {
                     />
                   </svg>
                 </div>
-                <h3 className="text-sm font-bold text-gray-800 mb-1">Reportes Avanzados</h3>
-                <p className="text-gray-600 text-xs">Generación automática de reportes mensuales.</p>
+                <h3 className="text-sm font-bold text-gray-800 mb-1">Reportes</h3>
+                <p className="text-gray-600 text-xs">Generación automática de reportes diarios y mensuales.</p>
               </div>
 
               <div className="bg-white rounded-lg border border-gray-200 p-3 hover:shadow-md transition-all duration-200">
@@ -195,11 +181,11 @@ function AcercaDeSection() {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div className="bg-white rounded-lg p-3 border border-indigo-200">
                   <h3 className="font-bold text-gray-800 mb-1 text-sm">Fecha de Lanzamiento</h3>
-                  <p className="text-gray-600 text-xs">Enero 2025</p>
+                  <p className="text-gray-600 text-xs">2025</p>
                 </div>
                 <div className="bg-white rounded-lg p-3 border border-indigo-200">
                   <h3 className="font-bold text-gray-800 mb-1 text-sm">Última Actualización</h3>
-                  <p className="text-gray-600 text-xs">07 Enero 2025</p>
+                  <p className="text-gray-600 text-xs">Julio 2025</p>
                 </div>
                 <div className="bg-white rounded-lg p-3 border border-indigo-200">
                   <h3 className="font-bold text-gray-800 mb-1 text-sm">Estado</h3>
@@ -210,36 +196,7 @@ function AcercaDeSection() {
               </div>
             </div>
 
-            <div className="bg-white rounded-lg border border-gray-200 p-3">
-              <h3 className="text-lg font-bold text-gray-800 mb-3">Historial de Versiones</h3>
-              <div className="space-y-3">
-                <div className="border-l-4 border-indigo-500 pl-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-bold text-gray-800 text-sm">v2.1.0</h4>
-                    <span className="text-xs text-gray-500">Enero 2025</span>
-                  </div>
-                  <ul className="text-xs text-gray-600 space-y-0.5">
-                    <li>• Interfaz completamente responsive</li>
-                    <li>• Mejoras en la experiencia de usuario</li>
-                    <li>• Optimización de rendimiento</li>
-                    <li>• Nuevos reportes avanzados</li>
-                  </ul>
-                </div>
 
-                <div className="border-l-4 border-blue-500 pl-3">
-                  <div className="flex items-center justify-between mb-1">
-                    <h4 className="font-bold text-gray-800 text-sm">v2.0.0</h4>
-                    <span className="text-xs text-gray-500">Diciembre 2024</span>
-                  </div>
-                  <ul className="text-xs text-gray-600 space-y-0.5">
-                    <li>• Rediseño completo de la interfaz</li>
-                    <li>• Implementación de React</li>
-                    <li>• Sistema de autenticación mejorado</li>
-                    <li>• Base de datos optimizada</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
 
             <div className="bg-white rounded-lg border border-gray-200 p-3">
               <h3 className="text-lg font-bold text-gray-800 mb-3">Tecnologías Utilizadas</h3>
@@ -455,7 +412,7 @@ function AcercaDeSection() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center space-x-1 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
                   activeTab === tab.id
-                    ? "bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md transform scale-105"
+                    ? "bg-gradient-to-r from-indigo-500 to-indigo-600 text-white shadow-md transform"
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
                 }`}
               >

@@ -69,8 +69,8 @@ export default function TablasSection() {
       <div className="space-y-3">
         {/* Barra de búsqueda compacta */}
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center justify-between">
-          <div className="relative flex-1 max-w-xs">
-            <div className="absolute inset-y-0 left-0 pl-2 flex items-center pointer-events-none">
+          <div className=" flex-1 max-w-xs">
+            <div  className="flex items-center border-gray-200 border rounded-[5px] px-4 focus:border-blue-500 focus:outline-none">
               <svg className="h-3 w-3 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path
                   strokeLinecap="round"
@@ -79,14 +79,15 @@ export default function TablasSection() {
                   d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
                 />
               </svg>
+              <input
+                type="text"
+                placeholder="Buscar por código o descripción..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="block w-full py-1 px-2 text-xs border-none focus:outline-none focus:ring-0 focus:border-transparent"
+              />
             </div>
-            <input
-              type="text"
-              placeholder="Buscar por código o descripción..."
-              value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              className="block w-full pl-8 pr-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 text-xs"
-            />
+
           </div>
           <div className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
             {filteredData.length} de {dataTupa.length} registros
@@ -106,7 +107,7 @@ export default function TablasSection() {
                 </div>
               ) : (
                 <table className="min-w-full divide-y divide-gray-200 text-xs">
-                  <thead className="bg-gradient-to-r from-slate-100 to-gray-100 sticky top-0">
+                  <thead className="bg-gradient-to-r from-slate-100 to-gray-100">
                     <tr>
                       <th className="px-2 py-2 text-left font-bold text-gray-700 uppercase tracking-wider">
                         Código
@@ -165,8 +166,7 @@ export default function TablasSection() {
                             <div className="flex items-center">
                               <div className="w-6 h-6 bg-gradient-to-r from-blue-100 to-blue-200 rounded-md flex items-center justify-center mr-2">
                                 <span className="text-xs font-bold text-blue-800">{item._id}</span>
-                              </div>
-                              <span className="text-xs font-medium text-gray-900">{item._id}</span>
+                              </div>  
                             </div>
                           </td>
                           <td className="px-2 py-2">
@@ -256,11 +256,10 @@ export default function TablasSection() {
               <button
                 key={table.id}
                 onClick={() => setActiveTable(table.id)}
-                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${
-                  activeTable === table.id
-                    ? `bg-gradient-to-r ${table.color} text-white shadow-md transform scale-105`
+                className={`flex items-center space-x-2 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 ${activeTable === table.id
+                    ? `bg-gradient-to-r ${table.color} text-white shadow-md transform`
                     : "bg-gray-100 text-gray-700 hover:bg-gray-200 hover:shadow-sm"
-                }`}
+                  }`}
               >
                 <span>{table.icon}</span>
                 <div className="text-left">
@@ -276,28 +275,10 @@ export default function TablasSection() {
         <div className="p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
             <h3 className="text-sm font-bold text-gray-800 flex items-center space-x-2">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              <span className="w-2 h-2 bg-green-500 rounded-full"></span>
               <span>{tables.find((t) => t.id === activeTable)?.label}</span>
             </h3>
-            <div className="flex flex-wrap gap-1">
-              <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 flex items-center space-x-1">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
-                </svg>
-                <span>Nuevo</span>
-              </button>
-              <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 flex items-center space-x-1">
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  />
-                </svg>
-                <span>Exportar</span>
-              </button>
-            </div>
+
           </div>
         </div>
 

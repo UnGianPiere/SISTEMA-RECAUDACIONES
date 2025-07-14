@@ -150,7 +150,7 @@ function Sidebar() {
       {/* Overlay para móvil */}
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-[3] bg-black bg-opacity-50 backdrop-blur-sm"
+          className="lg:hidden fixed inset-0 z-[3] bg-black/10"
           onClick={() => setIsMobileOpen(false)}
         />
       )}
