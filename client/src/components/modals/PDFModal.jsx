@@ -1,10 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 
 const PDFModal = ({ visible, onClose, pdfUrl }) => {
   if (!visible) return null;
-
+  const [loading, setLoading] = useState(true)
   return (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center bg-[rgba(0,0,0,0.3)]"
@@ -24,11 +24,27 @@ const PDFModal = ({ visible, onClose, pdfUrl }) => {
           </button>
         </div>
 
+        {loading && (
+          <div className="h-full flex justify-center items-center">
+            <div className="flex items-center p-2 w-30 rounded-[10px] justify-center flex-col gap-2">
+              <div className="flex justify-center items-center space-x-2">
+                <div className="w-3 h-3 rounded-full animate-bounce transition-colors duration-500 bg-blue-500 animate-color-bounce [animation-delay:-0.2s]"></div>
+                <div className="w-3 h-3 rounded-full animate-bounce transition-colors duration-500 bg-blue-500 animate-color-bounce [animation-delay:-0.1s]"></div>
+                <div className="w-3 h-3 rounded-full animate-bounce transition-colors duration-500 bg-blue-500 animate-color-bounce"></div>
+              </div>
+              <div className="text-blue-500 font-bold text-[15px]">
+                Cargando ...
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="h-full">
           <iframe
             src={pdfUrl}
             title="Vista previa PDF"
             className="w-full h-full"
+            onLoad={() => setLoading(false)}
           />
         </div>
       </div>

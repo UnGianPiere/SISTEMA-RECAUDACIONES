@@ -91,9 +91,9 @@ function Sidebar() {
 
   return (
     <>
-      {/* Mobile menu button */}
+      {/* Botón menú móvil */}
       <button
-        className="lg:hidden fixed top-20 left-4 z-40 bg-blue-700 text-white p-2 rounded-md shadow-lg"
+        className="lg:hidden fixed top-20 left-4 z-40 bg-gradient-to-r from-slate-600 to-slate-700 text-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 border border-slate-500"
         onClick={() => setIsMobileOpen(!isMobileOpen)}
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -103,27 +103,42 @@ function Sidebar() {
 
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-30 w-56 lg:w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out ${
+        className={`fixed lg:static inset-y-0 left-0 z-10 w-64 lg:w-72 bg-white shadow-xl transform transition-transform duration-300 ease-in-out border-r border-gray-200 ${
           isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
         }`}
       >
-        <div className="h-full overflow-y-auto pt-20 lg:pt-4">
+        <div className="h-full overflow-y-auto pt-20 lg:pt-6">
+          {/* Logo en sidebar móvil */}
+          <div className="lg:hidden px-4 pb-4 border-b border-gray-200">
+            <div className="flex items-center space-x-3">
+              <img src="/gorejunin.svg" alt="Logo" className="w-10 h-10" />
+              <div>
+                <h2 className="font-bold text-gray-800 text-sm">Gobierno Regional</h2>
+                <p className="text-xs text-gray-600">Sistema de Recaudaciones</p>
+              </div>
+            </div>
+          </div>
+
           <nav className="p-4">
             <ul className="space-y-2">
               {menuItems.map((item) => (
                 <li key={item.id}>
                   <button
                     onClick={() => handleNavigate(item.id)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-lg text-left transition-all duration-80 ${
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 group ${
                       currentSection === item.id
-                        ? "bg-blue-100 text-blue-800 border-l-4 border-blue-600 shadow-sm"
-                        : "text-gray-700 hover:bg-gray-100 hover:text-blue-700"
+                        ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 border-l-4 border-blue-600 shadow-md"
+                        : "text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:text-blue-700 hover:shadow-sm"
                     }`}
                   >
-                    <span className={currentSection === item.id ? "text-blue-600" : "text-gray-500"}>
+                    <span
+                      className={`transition-colors duration-200 ${
+                        currentSection === item.id ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600"
+                      }`}
+                    >
                       {item.icon}
                     </span>
-                    <span className="font-medium">{item.label}</span>
+                    <span className="font-medium text-sm lg:text-base">{item.label}</span>
                   </button>
                 </li>
               ))}
@@ -132,9 +147,10 @@ function Sidebar() {
         </div>
       </aside>
 
+      {/* Overlay para móvil */}
       {isMobileOpen && (
         <div
-          className="lg:hidden fixed inset-0 z-20 bg-black bg-opacity-30"
+          className="lg:hidden fixed inset-0 z-[3] bg-black bg-opacity-50 backdrop-blur-sm"
           onClick={() => setIsMobileOpen(false)}
         />
       )}

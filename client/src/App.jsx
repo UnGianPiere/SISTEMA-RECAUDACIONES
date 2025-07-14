@@ -3,7 +3,6 @@
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom"
 import Header from "./components/Header"
 import Sidebar from "./components/Sidebar"
-
 import RecaudacionSection from "./sections/RecaudacionSection"
 import ReportesSection from "./sections/ReportesSection"
 import TablasSection from "./sections/TablasSection"

@@ -1,16 +1,82 @@
-# dependencies
-/node_modules
-
-# next.js
-/.next/
-/out/
-
-# production
-/build
-/dist
-
-# debug
+# ========== NODE ==========
+node_modules/
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
-.pnpm-debug.log*
+pnpm-debug.log*
+.env
+.env.*.local
+*.local
+
+# ========== LOGS ==========
+logs/
+*.log
+debug.log
+
+# ========== OS & EDITOR FILES ==========
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+*.swp
+
+# ========== BUILD OUTPUT ==========
+dist/
+build/
+tmp/
+temp/
+
+# ========== COVERAGE ==========
+coverage/
+.nyc_output/
+
+# ========== REACT ==========
+*.env.production.local
+*.env.development.local
+public/env.js
+
+# ========== TESTS ==========
+jest/
+test-results/
+*.test.js
+*.spec.js
+
+# ========== MONGODB DUMPS ==========
+*.gz
+dump/
+
+# ========== PM2 PROCESS FILES ==========
+pids/
+*.pid
+*.seed
+
+# ========== BABEL/WEBPACK ==========
+.cache/
+webpack-stats.json
+
+# ========== LINT/STYLING ==========
+.eslintcache
+.stylelintcache
+
+# ========== TYPESCRIPT (si lo usas) ==========
+*.tsbuildinfo
+
+# ========== NEXT.JS (por si usas SSR) ==========
+.next/
+out/
+
+# ========== FIREBASE FUNCTIONS (si aplica) ==========
+functions/node_modules/
+
+# ========== OTHER ==========
+*.tgz
+*.bak
+*.old
+*.orig
+
+# ========== GIT ==========
+.git/
+.gitignore
+
+# ========== OPTIONAL MONOREPO SUPPORT ==========
+**/node_modules/

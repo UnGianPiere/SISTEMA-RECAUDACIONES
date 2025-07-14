@@ -13,7 +13,6 @@ if (!visible) return null;
             console.log(json)
             setDataTupa(json)
         }
-
         fetchData()
 
     }, [])

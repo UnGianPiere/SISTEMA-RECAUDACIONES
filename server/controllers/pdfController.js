@@ -7,15 +7,14 @@ const { datosPDF } = require('./reporteDiarioController');
 const { datosPDFMensual, obtenerDatosReporteMensual, obtenerDatosReporteMensual2 } = require('./reporteMensualController');
 //genera un PDF para reporte diario
 const generarPDF = async (req, res) => {
-    try {
+    let browser; // ✅ Declaración global para try/catch/finally
 
+    try {
         const id = parseInt(req.params.id);
 
-        const { reporte } = await datosPDF(id);
-        const { comprobantes } = await datosPDF(id);
+        const { reporte, comprobantes } = await datosPDF(id);
 
         const letras = numeroALetras(reporte.total);
-        console.log('letras', letras);
 
         const fechaObj = new Date(reporte.fecha);
         const dia = fechaObj.getUTCDate().toString().padStart(2, '0');
@@ -23,28 +22,16 @@ const generarPDF = async (req, res) => {
         const anio = fechaObj.getUTCFullYear();
         const importe = reporte.total;
 
-
-
-
         const recibos = comprobantes.map(comp => {
             const codigo = `CC.${comp.serie.toString().padStart(3, '0')}-${comp._id.toString().padStart(6, '0')}`;
-
-            const monto = comp.detalles.reduce((sum, det) => {
-                return sum + (det.cantidad * det.importe);
-            }, 0);
-
+            const monto = comp.detalles.reduce((sum, det) => sum + (det.cantidad * det.importe), 0);
             return { codigo, monto };
         });
 
-
-        // === 1. Preparar datos y recursos ===
         const logoPath = path.join(__dirname, '../assets/Escudo.png');
-
         if (!fs.existsSync(logoPath)) {
-            console.error('❌ Logo no encontrado en:', logoPath);
             return res.status(404).json({ error: 'Logo no encontrado' });
         }
-
         const logoBuffer = fs.readFileSync(logoPath);
         const logoBase64 = logoBuffer.toString('base64');
 
@@ -57,33 +44,34 @@ const generarPDF = async (req, res) => {
             hour12: false,
         });
 
-
         const datos = {
             fechaNOW,
             hora,
             numero: id,
             fecha: { dia, mes, anio },
-            importe: importe,
+            importe,
             logoBase64,
             recibos,
             numeroletrado: letras,
         };
 
-        // === 2. Renderizar la plantilla EJS ===
         const templatePath = path.join(__dirname, '../views/reporteDiario.ejs');
-
         if (!fs.existsSync(templatePath)) {
-            console.error('❌ Plantilla no encontrada en:', templatePath);
             return res.status(404).json({ error: 'Plantilla EJS no encontrada' });
         }
 
         const html = fs.readFileSync(templatePath, 'utf8');
         const htmlRenderizado = ejs.render(html, datos);
 
-        // === 3. Generar PDF con Puppeteer ===
-        const browser = await puppeteer.launch({
-            headless: true, // Asegura que no se muestre ventana (útil en servidores)
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Requerido en hosting como Heroku
+        // ✅ Asignar browser a variable global
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         });
 
         const page = await browser.newPage();
@@ -93,17 +81,9 @@ const generarPDF = async (req, res) => {
         const pdfBuffer = await page.pdf({
             format: 'A4',
             printBackground: true,
-            margin: {
-                top: '10mm',
-                bottom: '10mm',
-                left: '10mm',
-                right: '10mm',
-            },
+            margin: { top: '10mm', bottom: '10mm', left: '10mm', right: '10mm' },
         });
 
-        await browser.close();
-
-        // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
         res.set({
             'Content-Type': 'application/pdf',
             'Content-Disposition': 'inline; filename=recibo.pdf',
@@ -111,10 +91,18 @@ const generarPDF = async (req, res) => {
         });
 
         res.send(pdfBuffer);
+
     } catch (error) {
-        console.error('❌ Error inesperado al generar PDF:', error);
-        // Agrega el stacktrace para depuración
-        res.status(500).json({ error: 'Error interno al generar el PDF', details: error.message, stack: error.stack });
+        console.error('❌ Error al generar PDF:', error);
+        res.status(500).json({
+            error: 'Error interno al generar el PDF',
+            details: error.message,
+            stack: error.stack
+        });
+    } finally {
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
     }
 };
 
@@ -123,6 +111,7 @@ const generarPDF = async (req, res) => {
 //genera un PDF para reporte mensual de recudacion de ingresos
 const generarPDFMensual = async (req, res) => {
     const { anio, mes } = req.params;
+    let browser; 
     try {
         const sumaTotal = await datosPDFMensual(mes, anio);
         console.log('sumaTotal', sumaTotal);
@@ -151,10 +140,16 @@ const generarPDFMensual = async (req, res) => {
         const htmlRenderizado = ejs.render(html, datos);
 
         // === 3. Generar PDF con Puppeteer ===
-        const browser = await puppeteer.launch({
-            headless: true, // Asegura que no se muestre ventana (útil en servidores)
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Requerido en hosting como Heroku
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         });
+
 
         const page = await browser.newPage();
         await page.setContent(htmlRenderizado, { waitUntil: 'domcontentloaded' });
@@ -171,8 +166,6 @@ const generarPDFMensual = async (req, res) => {
             },
         });
 
-        await browser.close();
-
         // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
         res.set({
             'Content-Type': 'application/pdf',
@@ -187,12 +180,18 @@ const generarPDFMensual = async (req, res) => {
         console.error('❌ Error al generar PDF mensual:', error);
         res.status(500).json({ error: 'Error al generar PDF mensual', details: error.message, stack: error.stack });
     }
+    finally {
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
+    }
 }
 
 
 //genera un PDF para reporte mensual de ingresos por fuente de financiamiento
 const generarPDFMensual2 = async (req, res) => {
     const { anio, mes } = req.params;
+    let browser;
     try {
         const sumaTotal = await datosPDFMensual(mes, anio);
         console.log('sumaTotal', sumaTotal);
@@ -232,10 +231,16 @@ const generarPDFMensual2 = async (req, res) => {
         const htmlRenderizado = ejs.render(html, datos);
 
         // === 3. Generar PDF con Puppeteer ===
-        const browser = await puppeteer.launch({
-            headless: true, // Asegura que no se muestre ventana (útil en servidores)
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Requerido en hosting como Heroku
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         });
+
 
         const page = await browser.newPage();
         await page.setContent(htmlRenderizado, { waitUntil: 'domcontentloaded' });
@@ -251,9 +256,6 @@ const generarPDFMensual2 = async (req, res) => {
                 right: '10mm',
             },
         });
-
-        await browser.close();
-
         // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
         res.set({
             'Content-Type': 'application/pdf',
@@ -268,9 +270,15 @@ const generarPDFMensual2 = async (req, res) => {
         console.error('❌ Error al generar PDF mensual2:', error);
         res.status(500).json({ error: 'Error al generar PDF mensual2', details: error.message, stack: error.stack });
     }
+    finally{
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
+    }
 }
 
 const generarPDFMensual3 = async (req, res) => {
+    let browser;
     const { anio, mes } = req.params;
     try {
         const sumaTotal = await datosPDFMensual(mes, anio);
@@ -302,9 +310,14 @@ const generarPDFMensual3 = async (req, res) => {
         const htmlRenderizado = ejs.render(html, datos);
 
         // === 3. Generar PDF con Puppeteer ===
-        const browser = await puppeteer.launch({
-            headless: true, // Asegura que no se muestre ventana (útil en servidores)
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Requerido en hosting como Heroku
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         });
 
         const page = await browser.newPage();
@@ -322,8 +335,6 @@ const generarPDFMensual3 = async (req, res) => {
             },
         });
 
-        await browser.close();
-
         // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
         res.set({
             'Content-Type': 'application/pdf',
@@ -338,10 +349,16 @@ const generarPDFMensual3 = async (req, res) => {
         console.error('❌ Error al generar PDF mensual3:', error);
         res.status(500).json({ error: 'Error al generar PDF mensual3', details: error.message, stack: error.stack });
     }
+    finally {
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
+    }
 }
 
 generarPDFMensual4 = async (req, res) => {
     const { anio, mes } = req.params;
+    let browser;
     try {
         const data = await obtenerDatosReporteMensual2(anio, mes);
         const reportes = data.flatMap(reporte =>
@@ -400,10 +417,16 @@ generarPDFMensual4 = async (req, res) => {
         const htmlRenderizado = ejs.render(html, datos);
 
         // === 3. Generar PDF con Puppeteer ===
-        const browser = await puppeteer.launch({
-            headless: true, // Asegura que no se muestre ventana (útil en servidores)
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Requerido en hosting como Heroku
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         });
+
 
         const page = await browser.newPage();
         await page.setContent(htmlRenderizado, { waitUntil: 'domcontentloaded' });
@@ -414,8 +437,6 @@ generarPDFMensual4 = async (req, res) => {
             printBackground: true,
             preferCSSPageSize: true,
         });
-
-        await browser.close();
 
         // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
         res.set({
@@ -431,11 +452,17 @@ generarPDFMensual4 = async (req, res) => {
         console.error('❌ Error al generar PDF mensual4:', error);
         res.status(500).json({ error: 'Error al generar PDF mensual4', details: error.message, stack: error.stack });
     }
+    finally {
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
+    }
 
 }
 
 generarPDFMensual5 = async (req, res) => {
     const { anio, mes } = req.params;
+    let browser;
     try {
         const data = await obtenerDatosReporteMensual2(anio, mes);
         const reportes = data.flatMap(reporte =>
@@ -492,9 +519,14 @@ generarPDFMensual5 = async (req, res) => {
         const htmlRenderizado = ejs.render(html, datos);
 
         // === 3. Generar PDF con Puppeteer ===
-        const browser = await puppeteer.launch({
-            headless: true, // Asegura que no se muestre ventana (útil en servidores)
-            args: ['--no-sandbox', '--disable-setuid-sandbox'], // Requerido en hosting como Heroku
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
         });
 
         const page = await browser.newPage();
@@ -506,9 +538,6 @@ generarPDFMensual5 = async (req, res) => {
             printBackground: true,
             preferCSSPageSize: true,
         });
-
-        await browser.close();
-
         // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
         res.set({
             'Content-Type': 'application/pdf',
@@ -522,6 +551,11 @@ generarPDFMensual5 = async (req, res) => {
     } catch (error) {
         console.error('❌ Error al generar PDF mensual5:', error);
         res.status(500).json({ error: 'Error al generar PDF mensual5', details: error.message, stack: error.stack });
+    }
+    finally {
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
     }
 
 }
