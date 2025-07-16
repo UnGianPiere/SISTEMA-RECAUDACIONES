@@ -1,0 +1,15 @@
+app = "sistema-recaudaciones-emrx7q"
+primary_region = "bog"
+
+[http_service]
+auto_start_machines = true       # Inicia automáticamente si recibe tráfico
+auto_stop_machines = false       # ❗️No se apaga cuando está inactiva
+force_https = true
+internal_port = 5000
+min_machines_running = 1         # ❗️Mantiene al menos una instancia activa
+processes = ["app"]
+
+[[vm]]
+cpu_kind = "shared"
+cpus = 1
+memory_mb = 512                # Puedes usar 512 si estás en plan gratuito
