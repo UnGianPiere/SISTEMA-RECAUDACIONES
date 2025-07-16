@@ -12,4 +12,4 @@ processes = ["app"]
 [[vm]]
 cpu_kind = "shared"
 cpus = 1
-memory_mb = 512                # Puedes usar 512 si estás en plan gratuito
+memory_mb = 1024               # Puedes usar 512 si estás en plan gratuito
