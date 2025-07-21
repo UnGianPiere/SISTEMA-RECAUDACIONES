@@ -129,8 +129,8 @@ function RecaudacionSection() {
         doc?.dni && doc?.dni !== '0' && doc?.dni.length === 8
           ? doc.dni
           : doc?.ruc && doc?.ruc !== '0' && doc?.ruc.length === 11
-          ? doc.ruc
-          : '',
+            ? doc.ruc
+            : '',
     })
     abrirModal('editar', doc)
   }
@@ -142,7 +142,7 @@ function RecaudacionSection() {
       // Determinar el tipo de documento original
       const tieneRuc = datosSeleccion?.ruc && datosSeleccion.ruc !== '0';
       const tieneDni = datosSeleccion?.dni && datosSeleccion.dni !== '0';
-      
+
       if (tieneRuc) {
         // Si originalmente era RUC, solo permitir 11 dígitos
         if (value.length > 11) return;
@@ -264,6 +264,21 @@ function RecaudacionSection() {
   const handleExtraFunction = () => {
     abrirModal("anular", resultado.comprobantes[filaSeleccionada])
   }
+
+  const handleAnulacionConfirmada = () => {
+    const id=datosSeleccion.id;
+    const anular = async () => {
+      try {
+        await axios.put(`${urlUri}/api/comprobantes/anular/${id}`)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+    anular()
+    cerrarModal()
+    navigate(0)
+  }
+
 
   const ponerDatos = async (input) => {
     const valor = typeof input === "string" ? input.trim() : input?.target?.value.trim()
@@ -733,7 +748,9 @@ function RecaudacionSection() {
                   <p className="text-gray-700 text-sm">¿Desea anular este registro?</p>
                 </div>
                 <div className="flex gap-2 justify-center">
-                  <button className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-all duration-200 shadow-sm hover:shadow">
+                  <button
+                    onClick={handleAnulacionConfirmada}
+                    className="bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1.5 rounded text-xs font-medium transition-all duration-200 shadow-sm hover:shadow">
                     Aceptar
                   </button>
                   <button

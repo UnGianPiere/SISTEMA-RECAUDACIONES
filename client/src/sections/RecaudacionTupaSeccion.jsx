@@ -4,6 +4,8 @@ import { useNavigate } from "react-router-dom"
 import { useLocation } from "react-router-dom"
 import { TupaRegistroModal } from "../components/modals/TupaRegistroModal"
 import { RegistroModal } from "../components/modals/RegistroModal"
+import ModalGuardar from "../components/modals/ModalGuardar"
+
 import axios from "axios"
 
 function TupaSeccion() {
@@ -16,8 +18,19 @@ function TupaSeccion() {
   const [rows, setRows] = useState([])
   const [tablaData, setTablaData] = useState([])
   const [detalles, setDetalle] = useState("")
+  const [modalGuardar,setModalGuardar]=useState(false)
+  const [dataImpresion,setDataImpresion]=useState([])
 
   const API = import.meta.env.VITE_API_URL
+
+  const handleModalImprimir =()=>{
+    const data ={
+      datosRegistro,
+      tablaData
+    }
+    setDataImpresion(data)
+    setModalGuardar(true)
+  }
 
   const handleGuardarImprimir = async () => {
     // Validar que haya al menos un registro en la tabla
@@ -142,6 +155,8 @@ function TupaSeccion() {
         onClose={() => setMostrarRegistro(false)}
         onRegistro={manejarNuevoRegistro}
       />
+
+      <ModalGuardar visible={modalGuardar} onClose={() => setModalGuardar(false)} data={dataImpresion} save={handleGuardarImprimir}/>
 
       <div className="bg-white rounded-lg shadow-lg border border-gray-200 overflow-hidden">
         {/* Header compacto */}
@@ -339,7 +354,7 @@ function TupaSeccion() {
               </div>
 
               <button
-                onClick={handleGuardarImprimir}
+                onClick={handleModalImprimir}
                 disabled={tablaData.length === 0}
                 className={`w-full px-2 py-1 rounded-lg text-xs font-bold shadow-md transition-all duration-200 flex items-center justify-center space-x-1 ${
                   tablaData.length === 0 
@@ -347,15 +362,8 @@ function TupaSeccion() {
                   : 'bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white hover:shadow-lg'
                 }`}
               >
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"
-                  />
-                </svg>
-                <span>Guardar e Imprimir</span>
+                
+                <span>Imprimir</span>
               </button>
             </div>
           </div>

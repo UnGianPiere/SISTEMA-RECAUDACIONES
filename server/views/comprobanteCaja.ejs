@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <style>
+    body {
+      font-family: monospace;
+      font-size: 10px;
+      margin: 0;
+      width: 139.7mm;
+      height: 108mm;
+      position: relative;
+    }
+
+    .wa {
+      background: blanchedalmond;
+      height: 167mm;
+      width: 222mm;
+    }
+
+    .campo {
+      position: absolute;
+      white-space: pre;
+    }
+
+    /* Cabecera */
+    #nombre    { top: 50mm; left: 29mm; width: 90mm; }
+    #direccion { top: 58mm; left: 35mm; width: 90mm; }
+    #dni       { top: 65mm; left: 27mm; width: 30mm; }
+
+    /* Fecha separada: día, mes, año */
+    #fecha-dia   { top: 65mm; left: 144mm; width: 10mm; }
+    #fecha-mes   { top: 65mm; left: 170mm; width: 25mm; }
+    #fecha-anio  { top: 65mm; left: 202mm; width: 15mm; }
+
+    /* Fila 1 dinamico*/
+    #f1-cod   { top: 82mm; left: 22mm; width: 15mm; }
+    #f1-cant  { top: 82mm; left: 42mm; width: 15mm; }
+    #f1-desc  { top: 82mm; left: 70mm; width: 75mm; }
+    #f1-prec  { top: 82mm; left: 153mm; width: 20mm; text-align: right; }
+    #f1-tot   { top: 82mm; left: 182mm; width: 20mm; text-align: right; }
+
+    /* Fila 2 borrar pero seguir logica*/
+    #f2-cod   { top: 86mm; left: 22mm; width: 15mm; }
+    #f2-cant  { top: 86mm; left: 42mm; width: 15mm; }
+    #f2-desc  { top: 86mm; left: 70mm; width: 75mm; }
+    #f2-prec  { top: 86mm; left: 153mm; width: 20mm; text-align: right; }
+    #f2-tot   { top: 86mm; left: 182mm; width: 20mm; text-align: right; }
+
+
+    /*fila solesletras*/
+    #solesLetra { top: 140mm; left: 55mm; width: 90mm; }
+
+    /* Total final */
+    #total    { top: 150mm; left: 182mm; width: 20mm; text-align: right; font-weight: bold; }
+  </style>
+</head>
+<body>
+
+  <div class="wa"></div>
+
+  <!-- Cabecera -->
+  <div id="nombre" class="campo"><%=nombre%></div>
+  <div id="direccion" class="campo"><%=direccion%></div>
+  <div id="dni" class="campo"><%=DNIRUC%></div>
+
+  <!-- Fecha separada -->
+  <div id="fecha-dia" class="campo"><%=fecha.dia%></div>
+  <div id="fecha-mes" class="campo"><%=fecha.mes%></div>
+  <div id="fecha-anio" class="campo"><%=fecha.anio%></div>
+
+<% tupaData.forEach((item, index) => { 
+  const baseTop = 82; // posición inicial
+  const lineHeight = 4; // espacio entre filas en mm
+  const top = baseTop + index * lineHeight;
+%>
+  <div class="campo" style="top: <%= top %>mm; left: 22mm; width: 15mm;"><%= item.codigo %></div>
+  <div class="campo" style="top: <%= top %>mm; left: 42mm; width: 15mm;"><%= item.Cantidad %></div>
+  <div class="campo" style="top: <%= top %>mm; left: 60mm; width: 75mm;"><%= item.descripcion %></div>
+  <div class="campo" style="top: <%= top %>mm; left: 153mm; width: 20mm; text-align: right;"><%= item.precUnitario.toFixed(2) %></div>
+  <div class="campo" style="top: <%= top %>mm; left: 182mm; width: 20mm; text-align: right;"><%= item.valorVenta.toFixed(2) %></div>
+<% }); %>
+
+  <div id="solesLetra" class="campo">SON: <%=totalLetras%></div>
+
+  <!-- Total -->
+  <div id="total" class="campo"><%=total%></div>
+
+</body>
+</html>

@@ -2,6 +2,10 @@ const express = require('express');
 const router = express.Router();
 const controller = require('../controllers/comprobanteIngresoController');
 
+
+//Anular comprobante ingreso
+router.put('/anular/:id', controller.anularComprobante)
+
 // POST nuevo
 router.post('/', controller.createComprobante);
 

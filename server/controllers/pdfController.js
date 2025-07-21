@@ -111,7 +111,7 @@ const generarPDF = async (req, res) => {
 //genera un PDF para reporte mensual de recudacion de ingresos
 const generarPDFMensual = async (req, res) => {
     const { anio, mes } = req.params;
-    let browser; 
+    let browser;
     try {
         const sumaTotal = await datosPDFMensual(mes, anio);
         console.log('sumaTotal', sumaTotal);
@@ -270,7 +270,7 @@ const generarPDFMensual2 = async (req, res) => {
         console.error('❌ Error al generar PDF mensual2:', error);
         res.status(500).json({ error: 'Error al generar PDF mensual2', details: error.message, stack: error.stack });
     }
-    finally{
+    finally {
         if (browser) {
             await browser.close().then(() => console.log('Browser closed'));
         }
@@ -560,11 +560,91 @@ generarPDFMensual5 = async (req, res) => {
 
 }
 
+const generarPDFComprobanteCaja = async (req, res) => {
+    const data = req.body
+    let browser;
+    try {
+        const total = data.tablaData.reduce((total,item)=>{
+            return total+item.total
+        },0);
+        const totalLetras = numeroALetras(total);
+
+        const tupaData = data.tablaData.map(element => ({
+                codigo: element._id,
+                descripcion: element.descripcion,
+                precUnitario: element.importe,
+                Cantidad: element.cantidad,
+                valorVenta: element.total
+            }));
+
+        const datos = {
+            nombre: data.datosRegistro.nombre,
+            direccion: data.datosRegistro.direccion,
+            DNIRUC: data.datosRegistro.numeroDocumento,
+            fecha: {
+                dia: 17,
+                mes: "julio",
+                anio: "2025"
+            },
+            tupaData,
+            totalLetras,
+            total
+        };
+
+        // Ruta a tu plantilla .ejs
+        const templatePath = path.join(__dirname, '../views/comprobanteCaja.ejs');
+        const html = fs.readFileSync(templatePath, 'utf8');
+
+        // Rellenar la plantilla con los datos
+        const htmlRenderizado = ejs.render(html, datos);
+
+        // Generar PDF
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
+        });
+
+        const page = await browser.newPage();
+        await page.setContent(htmlRenderizado, { waitUntil: 'domcontentloaded' });
+        await page.emulateMediaType('screen');
+
+
+        const pdfBuffer = await page.pdf({
+            height: `167mm`,
+            width: `222mm`,  // alto más corto
+            printBackground: false,
+            landscape: false,   // NO usar landscape porque ya ajustamos width/height en horizontal
+            margin: { top: '0mm', bottom: '0mm', left: '0mm', right: '0mm' }
+        });
+
+        // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'inline; filename=recibo.pdf',
+            'Content-Length': pdfBuffer.length,
+        });
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error(`El error es ${error}`)
+    }
+    finally {
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
+    }
+}
+
 module.exports = {
     generarPDF,
     generarPDFMensual,
     generarPDFMensual2,
     generarPDFMensual3,
     generarPDFMensual4,
-    generarPDFMensual5
+    generarPDFMensual5,
+    generarPDFComprobanteCaja
 };

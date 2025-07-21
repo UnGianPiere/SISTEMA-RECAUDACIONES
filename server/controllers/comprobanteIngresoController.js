@@ -1,5 +1,6 @@
 const ComprobanteIngreso = require('../models/ComprobanteIngreso');
 const ComprobanteDetalle = require('../models/ComprobanteDetalle');
+const ReporteDiario = require('../models/ReporteDiario')
 // Crear comprobante
 exports.createComprobante = async (req, res) => {
     try {
@@ -87,5 +88,53 @@ exports.deleteComprobante = async (req, res) => {
         res.json({ mensaje: 'Eliminado correctamente' });
     } catch (err) {
         res.status(500).json({ error: err.message });
+    }
+};
+
+// Anular comprobante detalle
+exports.anularComprobante = async (req, res) => {
+    const id = req.params.id;
+
+    try {
+        // 1. Anular comprobante
+        const anulado = await ComprobanteIngreso.findByIdAndUpdate(
+            id,
+            { $set: { anulado: true } },
+            { new: true }
+        );
+
+        // 2. Sumar importes de detalles relacionados
+        const dataDetalle = await ComprobanteDetalle.find({ ingresoId: id });
+        const suma = dataDetalle.reduce((acc, detalle) => {
+            return acc + (detalle.cantidad * detalle.importe);
+        }, 0);
+
+        // 3. Restar del total en ReporteDiario
+        const comprobante = await ComprobanteIngreso.findById(id);
+        const reportediario = await ReporteDiario.findById(comprobante.numeroregistro);
+
+        const nuevoTotal = reportediario.total - suma;
+
+        const restado = await ReporteDiario.findOneAndUpdate(
+            { _id: reportediario._id },
+            { $set: { total: nuevoTotal } },
+            { new: true }
+        );
+
+        // 4. Eliminar detalles del comprobante
+        const eliminados = await ComprobanteDetalle.deleteMany({ ingresoId: id });
+
+        // ✅ Enviar una sola respuesta consolidada
+        res.json({
+            mensaje: "Comprobante anulado correctamente",
+            comprobante: anulado,
+            totalRestado: suma,
+            reporteActualizado: restado,
+            detallesEliminados: eliminados.deletedCount
+        });
+
+    } catch (error) {
+        console.error("❌ Error al anular comprobante:", error.message);
+        res.status(500).json({ error: "Error al anular comprobante" });
     }
 };
