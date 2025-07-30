@@ -1,6 +1,7 @@
 "use client"
 
 import { Routes, Route, useLocation, useNavigate } from "react-router-dom"
+import { useState } from "react"
 import Header from "./components/Header"
 import Sidebar from "./components/Sidebar"
 import RecaudacionSection from "./sections/RecaudacionSection"
@@ -13,21 +14,22 @@ import TupaSeccion from "./sections/RecaudacionTupaSeccion"
 function App() {
   const location = useLocation()
   const navigate = useNavigate()
+  const [isMobileOpen, setIsMobileOpen] = useState(false)
 
   const currentPath = location.pathname.replace("/", "") || "recaudacion"
 
   return (
     <div className="flex flex-col h-screen">
-      <Header />
+      <Header isMobileOpen={isMobileOpen} setIsMobileOpen={setIsMobileOpen} />
       <div className="flex flex-1 overflow-hidden">
-        <aside className="sticky top-0 p-4">
-          <Sidebar
-            activeSection={currentPath}
-            onNavigate={(section) => navigate(`/${section}`)}
-          />
-        </aside>
+        <Sidebar
+          isMobileOpen={isMobileOpen}
+          setIsMobileOpen={setIsMobileOpen}
+          activeSection={currentPath}
+          onNavigate={(section) => navigate(`/${section}`)}
+        />
 
-        <main className="flex-1 overflow-y-auto bg-gray-50 p-6">
+        <main className="flex-1 overflow-y-auto bg-gray-50">
           <Routes>
             <Route path="/" element={<RecaudacionSection />} />
             <Route path="/recaudacion" element={<RecaudacionSection />} />

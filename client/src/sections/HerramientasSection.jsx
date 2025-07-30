@@ -4,7 +4,7 @@ import { useState } from "react"
 import { useConfig } from '../app/config/useConfig'
 
 function HerramientasSection() {
-  const [activeTab, setActiveTab] = useState("backup")
+  const [activeTab, setActiveTab] = useState("config")
   const { selectedYear, setSelectedYear, theme, setTheme } = useConfig();
 
   const handleChangeAnio = (e)=>{

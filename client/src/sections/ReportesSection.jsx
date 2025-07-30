@@ -283,7 +283,7 @@ function ReportesSection() {
   }
 
   return (
-    <div className="h-full flex flex-col space-y-2 p-1 sm:p-2">
+    <div className="h-full flex flex-col space-y-2 p-1 sm:p-2 overflow-hidden">
 
       {toast && (
         <div className="fixed top-4 right-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white text-xs px-4 py-2 rounded-lg shadow-lg z-50 border border-slate-600 animate-fadeIn">
@@ -316,7 +316,7 @@ function ReportesSection() {
 
       <Modal visible={modalVisible} onClose={() => setModalVisible(false)} pdfUrl={pdfUrl} />
 
-      <div className="bg-white rounded-lg shadow-lg flex-1 flex flex-col min-h-0 border border-gray-200">
+             <div className="bg-white rounded-lg shadow-lg flex-1 flex flex-col min-h-0 max-h-full border border-gray-200 overflow-hidden">
         {/* Header compacto */}
         <div className="p-3 sm:p-4 border-b border-gray-200 flex-shrink-0 bg-gradient-to-r from-slate-50 via-blue-50 to-slate-50">
           <div>
@@ -331,8 +331,8 @@ function ReportesSection() {
 
 
 
-        {seccion === "mensual" && (
-          <div>
+                 {seccion === "mensual" && (
+           <div className="flex flex-col flex-1 overflow-hidden">
             <div className="p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200 flex-shrink-0">
               <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
                 <div className="grid grid-cols-2 gap-3 flex-1 max-w-sm">
@@ -386,9 +386,9 @@ function ReportesSection() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-auto p-3 sm:p-4">
-              <div className="grid gap-2 sm:gap-3">
-                {reportes.map((reporte) => (
+                         <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+               <div className="grid gap-2 sm:gap-3 min-h-0">
+                 {reportes.map((reporte) => (
                   <div
                     key={reporte.id}
                     className="group bg-white border border-gray-200 rounded-lg p-3 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-1"
@@ -424,7 +424,7 @@ function ReportesSection() {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-1 lg:flex-nowrap lg:ml-3">
+                      <div className="flex flex-wrap gap-1 lg:flex-nowrap lg:ml-3 flex-shrink-0">
                         <button
                           onClick={() => abrirModalConPDF(reporte.tipoAPI)}
                           className="flex-1 lg:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
@@ -484,8 +484,8 @@ function ReportesSection() {
           </div>
         )}
 
-        {seccion === "anual" && (
-          <div>
+                 {seccion === "anual" && (
+           <div className="flex flex-col flex-1 overflow-hidden">
             <div className="p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200 flex-shrink-0">
               <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
                 <div className="grid grid-cols-2 gap-3 flex-1 max-w-sm">
@@ -511,14 +511,14 @@ function ReportesSection() {
               </div>
             </div>
 
-            <div className="flex-1 overflow-auto p-3 sm:p-4">
-              <div className="grid gap-2 sm:gap-3">
-                {reportesAnual.map((reporte) => (
+                         <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+               <div className="grid gap-2 sm:gap-3 min-h-0">
+                 {reportesAnual.map((reporte) => (
                   <div
                     key={reporte.id}
                     className="group bg-white border border-gray-200 rounded-lg p-3 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-1"
                   >
-                    <div className="flex flex-raw lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
                       <div className="flex items-start space-x-3 flex-1 min-w-0">
                         <div
                           className={`flex-shrink-0 w-8 h-8 bg-gradient-to-r ${reporte.color} rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform duration-200`}
@@ -549,7 +549,7 @@ function ReportesSection() {
                         </div>
                       </div>
 
-                      <div className="flex flex-wrap gap-1 lg:flex-nowrap lg:ml-3">
+                      <div className="flex flex-wrap gap-1 lg:flex-nowrap lg:ml-3 flex-shrink-0">
                         <button
                           onClick={() => abrirModalConPDFAnual()}
                           className="flex-1 lg:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"

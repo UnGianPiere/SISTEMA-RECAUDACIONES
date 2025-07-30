@@ -399,7 +399,9 @@ function RecaudacionSection() {
               className="w-8 h-8 sm:w-12 sm:h-12 transition-transform hover:scale-105"
               alt="Escudo"
             />
-            <h2 className="text-lg font-bold text-gray-800">Recaudación - {selectedYear}</h2>
+            <h2 className="block sm:hidden text-lg font-bold text-gray-800">{selectedYear}</h2>
+            
+            <h2 className="hidden sm:block text-lg font-bold text-gray-800">Recaudación - {selectedYear}</h2>
           </div>
 
 

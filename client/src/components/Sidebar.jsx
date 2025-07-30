@@ -3,8 +3,7 @@
 import { useState } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 
-function Sidebar() {
-  const [isMobileOpen, setIsMobileOpen] = useState(false)
+function Sidebar({ isMobileOpen, setIsMobileOpen }) {
   const navigate = useNavigate()
   const location = useLocation()
 
@@ -91,21 +90,10 @@ function Sidebar() {
 
   return (
     <>
-      {/* Botón menú móvil */}
-      <button
-        className="lg:hidden fixed top-20 left-4 z-40 bg-gradient-to-r from-slate-600 to-slate-700 text-white p-3 rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 border border-slate-500"
-        onClick={() => setIsMobileOpen(!isMobileOpen)}
-      >
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-
       {/* Sidebar */}
       <aside
-        className={`fixed lg:static inset-y-0 left-0 z-10 w-64 lg:w-72 bg-white shadow-xl transform transition-transform duration-300 ease-in-out border-r border-gray-200 ${
-          isMobileOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"
-        }`}
+        className={`fixed lg:static inset-y-0 left-0 z-[5] lg:z-10 w-64 lg:w-72 bg-white shadow-xl transform transition-all duration-500 ease-out border-r border-gray-200 h-full ${isMobileOpen ? "translate-x-0 opacity-100" : "-translate-x-full lg:translate-x-0 opacity-0 lg:opacity-100"
+          }`}
       >
         <div className="h-full overflow-y-auto pt-20 lg:pt-6">
           {/* Logo en sidebar móvil */}
@@ -121,20 +109,18 @@ function Sidebar() {
 
           <nav className="p-4">
             <ul className="space-y-2">
-              {menuItems.map((item) => (
-                <li key={item.id}>
+                            {menuItems.map((item, index) => (
+                <li key={item.id} className="animate-fadeInUp" style={{ animationDelay: `${index * 100}ms` }}>
                   <button
                     onClick={() => handleNavigate(item.id)}
-                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-200 group ${
-                      currentSection === item.id
-                        ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 border-l-4 border-blue-600 shadow-md"
-                        : "text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:text-blue-700 hover:shadow-sm"
-                    }`}
+                    className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl text-left transition-all duration-300 ease-out transform group ${currentSection === item.id
+                        ? "bg-gradient-to-r from-blue-50 to-blue-100 text-blue-800 border-l-4 border-blue-600 shadow-lg scale-[1.02]"
+                        : "text-gray-700 hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100 hover:text-blue-700 hover:shadow-md hover:scale-[1.01]"
+                      }`}
                   >
                     <span
-                      className={`transition-colors duration-200 ${
-                        currentSection === item.id ? "text-blue-600" : "text-gray-500 group-hover:text-blue-600"
-                      }`}
+                      className={`transition-all duration-300 ease-out transform ${currentSection === item.id ? "text-blue-600 scale-110" : "text-gray-500 group-hover:text-blue-600 group-hover:scale-105"
+                        }`}
                     >
                       {item.icon}
                     </span>
@@ -148,12 +134,10 @@ function Sidebar() {
       </aside>
 
       {/* Overlay para móvil */}
-      {isMobileOpen && (
-        <div
-          className="lg:hidden fixed inset-0 z-[3] bg-black/10"
-          onClick={() => setIsMobileOpen(false)}
-        />
-      )}
+      <div
+        className={`lg:hidden fixed inset-0 z-[4] bg-black/10 transition-all duration-500 ease-out ${isMobileOpen ? "opacity-100" : "opacity-0 pointer-events-none"}`}
+        onClick={() => setIsMobileOpen(false)}
+      />
     </>
   )
 }
