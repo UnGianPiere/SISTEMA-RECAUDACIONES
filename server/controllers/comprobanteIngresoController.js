@@ -45,14 +45,27 @@ exports.getAllComprobantes = async (req, res) => {
 //Obtener el último comprobante
 exports.getUltimoComprobante = async (req, res) => {
     try {
-        const ultimo = await ComprobanteIngreso.findOne().sort({ _id: -1 });
-        if (!ultimo) return res.status(404).json({ error: 'No hay comprobantes' });
+        const [ultimo] = await ComprobanteIngreso.aggregate([
+            {
+                $addFields: {
+                    correlativo: {
+                        $toInt: { $arrayElemAt: [{ $split: ["$_id", "-"] }, 0] }
+                    }
+                }
+            },
+            { $sort: { correlativo: -1 } },
+            { $limit: 1 }
+        ]);
+
+        if (!ultimo) {
+            return res.status(404).json({ error: 'No hay comprobantes' });
+        }
+
         res.json(ultimo);
     } catch (err) {
         res.status(500).json({ error: err.message });
     }
 };
-
 
 // Obtener por ID
 exports.getComprobanteById = async (req, res) => {

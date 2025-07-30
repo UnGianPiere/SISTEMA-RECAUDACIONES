@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const comprobanteDetalleSchema = new mongoose.Schema({
     ingresoId: {
-        type: Number, // Este es el _id del comprobante de ingreso
+        type: String, // Este es el _id del comprobante de ingreso
         required: true,
         ref: 'ComprobanteIngreso'
     },

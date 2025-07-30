@@ -1,8 +1,8 @@
 const mongoose = require('mongoose');
 
 const comprobanteIngresoSchema = new mongoose.Schema({
-    _id: { type: Number },  // Aquí usamos directamente _id como recing
-    numeroregistro: { type: Number, required: true, ref: 'ReporteDiario' },
+    _id: { type: String },  // Aquí usamos directamente _id como recing
+    numeroregistro: { type: String, required: true, ref: 'ReporteDiario' },
     serie: { type: Number, required: true },
     nombre: { type: String, trim: true },
     direccion: { type: String, trim: true },

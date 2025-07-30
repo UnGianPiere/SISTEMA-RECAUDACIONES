@@ -1,9 +1,10 @@
 const express = require('express');
 const router = express.Router();
-const { generarPDF,generarPDFMensual,generarPDFMensual2,generarPDFMensual3,generarPDFMensual4,generarPDFMensual5,generarPDFComprobanteCaja} = require('../controllers/pdfController');
+const { generarPDF,generarPDFMensual,generarPDFMensual2,generarPDFMensual3,generarPDFMensual4,generarPDFMensual5,generarPDFComprobanteCaja,generarPDFAnual} = require('../controllers/pdfController');
 
 // Ruta para generar y mostrar PDF
 router.get('/generar-pdf/:id', generarPDF);
+router.get('/generar-pdf-reporte-anual/:anio', generarPDFAnual);
 router.post('/generar-pdf-comprobante-caja/', generarPDFComprobanteCaja); // Ruta para generar PDF mensual de documento anulado
 router.get('/generar-pdf-mensual-recaudacion/:anio/:mes', generarPDFMensual); // Ruta para generar PDF mensual de recaudacion de ingresos
 router.get('/generar-pdf-mensual-ingresos/:anio/:mes', generarPDFMensual2); // Ruta para generar PDF mensual de ingresos

@@ -16,7 +16,7 @@ router.post('/', crearReporte);
 router.get('/', obtenerReportes);
 
 // Get ultimo reporte
-router.get('/reportes/ultimo',obtenerUltimoReporte)
+router.get('/reportes/ultimo/:año',obtenerUltimoReporte)
 
 // GET /api/reportes/ingresos/:id
 router.get('/ingresos/:id', obtenerReportePorIdconIngresos);

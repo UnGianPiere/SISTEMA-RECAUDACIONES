@@ -4,9 +4,12 @@ import axios from "axios"
 import GenericModal from "../components/GenericModal"
 import { useNavigate } from "react-router-dom"
 import ConfirmModal from "../components/modals/ModalConfirmacion"
+import { useConfig } from "../app/config/useConfig";
 
 function RecaudacionSection() {
+  const { selectedYear } = useConfig();
   const navigate = useNavigate()
+
   const [formData, setFormData] = useState({
     fecha: new Date().toISOString().split("T")[0],
     sector: "03 ARCHIVO REGIONAL JUNIN",
@@ -18,6 +21,7 @@ function RecaudacionSection() {
     numeroRecibo: "",
     ultimoRIC: "",
   })
+
 
   const [totales, setTotales] = useState({ debe: 0, haber: 0 })
   const [loading, setLoading] = useState(false)
@@ -67,8 +71,11 @@ function RecaudacionSection() {
   }
 
   const handleConfirmar = async () => {
+    const idnuevo = parseInt(nuevoRecibo.split('-')[0]) + 1
+    const anio = new Date().getFullYear();
+    const idnuevoString=idnuevo+`-${anio}`
     const dataNuevoRecibo = {
-      _id: nuevoRecibo + 1,
+      _id:  idnuevoString,
       ctapa1: "1101.0101",
       ctapa2: "1101.0101",
       total: 0,
@@ -154,24 +161,6 @@ function RecaudacionSection() {
     setEditForm((prev) => ({ ...prev, [name]: value }))
   }
 
-  // Función que se ejecuta al guardar
-  const handleEditSave = (e) => {
-    e.preventDefault()
-    // Aquí puedes hacer una petición a la API si lo deseas
-    // Por ahora solo actualiza el estado local para mostrar el cambio
-    setDatosSeleccion((prev) => ({
-      ...prev,
-      nombre: editForm.nombre,
-      direccion: editForm.direccion,
-      dni: editForm.documento.length === 8 ? editForm.documento : prev?.dni,
-      ruc: editForm.documento.length === 11 ? editForm.documento : prev?.ruc,
-    }))
-    // Aquí puedes ejecutar cualquier función adicional que desees
-    // Por ejemplo:
-    // actualizarComprobanteEnBackend(editForm)
-    cerrarModal()
-  }
-
 
   const handleInputChange = (e) => {
     const { name, value } = e.target
@@ -186,7 +175,8 @@ function RecaudacionSection() {
       try {
         const data = await fetch(`${urlUri}/api/comprobantes/ultimo`)
         const json = await data.json()
-        setUltimoRegistro(json._id + 1)
+        setUltimoRegistro(
+          parseInt(json._id.split('-')[0])+ 1)
       } catch (error) {
         console.error(`El error es: ${error}`)
       }
@@ -241,7 +231,7 @@ function RecaudacionSection() {
   const handlePrint = async () => {
     setLoadingPDF(true)
     try {
-      const url = `${urlUri}/api/pdf/generar-pdf/${printNum}`
+      const url = `${urlUri}/api/pdf/generar-pdf/${printNum}-${selectedYear}`
       const response = await fetch(url)
       const blob = await response.blob()
       const blobUrl = window.URL.createObjectURL(blob)
@@ -286,7 +276,7 @@ function RecaudacionSection() {
     setPrintNum(valor)
     try {
       setLoading(true)
-      const response = await axios.get(`${urlUri}/api/reporte-diario/ingresos/${valor}`)
+      const response = await axios.get(`${urlUri}/api/reporte-diario/ingresos/${valor}-${selectedYear}`)
       const { reporte, comprobantes } = response.data
 
       setResultado({
@@ -350,9 +340,9 @@ function RecaudacionSection() {
 
   const cargarUltimoRIC = async () => {
     try {
-      const response = await axios.get(`${urlUri}/api/reporte-diario/reportes/ultimo`)
+      const response = await axios.get(`${urlUri}/api/reporte-diario/reportes/ultimo/${selectedYear}`)
       const ultimoID = response.data?._id || ""
-      setPrintNum(ultimoID)
+      setPrintNum(ultimoID.split('-')[0])
       if (ultimoID) {
         setFormData((prev) => ({
           ...prev,
@@ -409,7 +399,7 @@ function RecaudacionSection() {
               className="w-8 h-8 sm:w-12 sm:h-12 transition-transform hover:scale-105"
               alt="Escudo"
             />
-            <h2 className="text-lg font-bold text-gray-800">Recaudación</h2>
+            <h2 className="text-lg font-bold text-gray-800">Recaudación - {selectedYear}</h2>
           </div>
 
 
@@ -420,7 +410,7 @@ function RecaudacionSection() {
               <input
                 type="text"
                 name="numeroRecibo"
-                value={formData.numeroRecibo}
+                value={formData.numeroRecibo.split('-')[0]}
                 onChange={(e) => {
                   handleInputChange(e)
                   ponerDatos(e)
@@ -433,7 +423,7 @@ function RecaudacionSection() {
               <input
                 type="text"
                 name="ultimoRIC"
-                value={formData.ultimoRIC}
+                value={formData.ultimoRIC.split('-')[0]}
                 readOnly
                 className="text-base font-bold text-blue-600 border border-gray-300 rounded px-2 py-1 w-16 text-center bg-gray-50"
               />
@@ -611,7 +601,7 @@ function RecaudacionSection() {
                     >
                       <td className="px-1 py-0.5">CC</td>
                       <td className="px-1 py-0.5">00{doc.serie}</td>
-                      <td className="px-1 py-0.5">0{doc.id}</td>
+                      <td className="px-1 py-0.5">0{doc.id.split('-')[0]}</td>
                       <td className="px-1 py-0.5">{doc.igv}</td>
                       <td className="px-1 py-0.5">{doc.ruc}</td>
                       <td className="px-1 py-0.5">{doc.dni}</td>

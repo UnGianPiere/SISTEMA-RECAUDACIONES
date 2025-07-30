@@ -10,6 +10,8 @@ function ReportesSection() {
   const [pdfUrl, setPdfUrl] = useState("")
   const [toast, setToast] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [seccion, setSeccion] = useState("mensual");
+
 
   // Obtener fecha actual
   const fechaActual = new Date()
@@ -27,6 +29,12 @@ function ReportesSection() {
     setModalVisible(true)
   }
 
+    const abrirModalConPDFAnual = () => {
+    const url = `${API}/api/pdf/generar-pdf-reporte-anual/${filtros.año}`
+    setPdfUrl(url)
+    setModalVisible(true)
+  }
+
   const handleFiltroChange = (e) => {
     setFiltros({
       ...filtros,
@@ -35,7 +43,7 @@ function ReportesSection() {
   }
 
   const añosDisponibles = () => {
-    const añoInicio = 2021;
+    const añoInicio = 2013;
     const años = [];
     for (let año = añoActual; año >= añoInicio; año--) {
       años.push(año);
@@ -60,7 +68,7 @@ function ReportesSection() {
   ]
 
   const getFechaActual = () => `${meses.find((m) => m.value === filtros.mes)?.label} ${filtros.año}`
-
+  const getFechaAnual = () => `${filtros.año}`
   const reportes = [
     {
       id: 1,
@@ -159,6 +167,28 @@ function ReportesSection() {
     },
   ]
 
+  const reportesAnual = [
+    {
+      id: 1,
+      titulo: "SEGUIMIENTO DE RECAUDACION DE INGRESOS ANUAL",
+      descripcion: "Reporte detallado de la recaudación de ingresos del año",
+      fecha: getFechaAnual(),
+      tipo: "PDF",
+      tipoAPI: "ingresos",
+      color: "from-orange-500 to-orange-600",
+      icon: (
+        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+          />
+        </svg>
+      ),
+    }
+  ]
+
   const handleDescargar = async (tipoAPI) => {
     try {
       const url = `${API}/api/pdf/generar-pdf-mensual-${tipoAPI}/${filtros.año}/${filtros.mes}`
@@ -179,10 +209,55 @@ function ReportesSection() {
     }
   }
 
+    const handleDescargarAnual = async () => {
+    try {
+      const url = `${API}/api/pdf/generar-pdf-reporte-anual/${filtros.año}`
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const link = document.createElement("a")
+      link.href = blobUrl
+      link.download = `reporte-${filtros.año}.pdf`
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+      window.URL.revokeObjectURL(blobUrl)
+      showToast("✅ Descarga completada")
+    } catch (error) {
+      console.error("❌ Error al descargar PDF:", error)
+      showToast("❌ Error al descargar PDF")
+    }
+  }
+
+
+
   const handleImprimir = async (tipoAPI) => {
     setLoading(true)
     try {
       const url = `${API}/api/pdf/generar-pdf-mensual-${tipoAPI}/${filtros.año}/${filtros.mes}`
+      const response = await fetch(url)
+      const blob = await response.blob()
+      const blobUrl = window.URL.createObjectURL(blob)
+      const iframe = document.createElement("iframe")
+      iframe.style.display = "none"
+      iframe.src = blobUrl
+      document.body.appendChild(iframe)
+      iframe.onload = () => {
+        setLoading(false)
+        iframe.contentWindow.focus()
+        iframe.contentWindow.print()
+        showToast("🖨️ Imprimiendo...")
+      }
+    } catch (error) {
+      console.error("❌ Error al imprimir PDF:", error)
+      showToast("❌ Error al imprimir PDF")
+    }
+  }
+
+  const handleImprimirAnual = async () => {
+    setLoading(true)
+    try {
+      const url = `${API}/api/pdf/generar-pdf-reporte-anual/${filtros.año}`
       const response = await fetch(url)
       const blob = await response.blob()
       const blobUrl = window.URL.createObjectURL(blob)
@@ -209,7 +284,7 @@ function ReportesSection() {
 
   return (
     <div className="h-full flex flex-col space-y-2 p-1 sm:p-2">
-      {/* Toast notification */}
+
       {toast && (
         <div className="fixed top-4 right-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white text-xs px-4 py-2 rounded-lg shadow-lg z-50 border border-slate-600 animate-fadeIn">
           {toast}
@@ -244,164 +319,298 @@ function ReportesSection() {
       <div className="bg-white rounded-lg shadow-lg flex-1 flex flex-col min-h-0 border border-gray-200">
         {/* Header compacto */}
         <div className="p-3 sm:p-4 border-b border-gray-200 flex-shrink-0 bg-gradient-to-r from-slate-50 via-blue-50 to-slate-50">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-1">Reportes Mensuales</h2>
-              <p className="text-xs text-gray-600">Genere y visualice reportes del sistema</p>
-            </div>
-            <div className="flex items-center space-x-2 text-xs text-gray-500">
-              <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
-              <span>
-                Período: {meses.find((m) => m.value === filtros.mes)?.label} {filtros.año}
-              </span>
-            </div>
+          <div>
+            <button
+              onClick={() => setSeccion("mensual")}
+              className="mx-5 py-2 px-5 bg-gradient-to-r from-green-600 via-green-500 to-green-600 rounded-[9px] text-amber-50 font-bold hover:from-green-700 hover:via-green-600 hover:to-green-700">Reportes Mensuales</button>
+            <button
+              onClick={() => setSeccion("anual")}
+              className="py-2 px-5 bg-gradient-to-r from-orange-600 via-orange-400 to-orange-600 rounded-[9px] text-amber-50 font-bold hover:from-orange-700 hover:via-orange-600 hover:to-orange-700">Reportes Anuales</button>
           </div>
         </div>
 
-        {/* Filtros compactos */}
-        <div className="p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200 flex-shrink-0">
-          <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
-            <div className="grid grid-cols-2 gap-3 flex-1 max-w-sm">
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Año</label>
-                <select
-                  name="año"
-                  value={filtros.año}
-                  onChange={handleFiltroChange}
-                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
-                >
-                  {añosRecientes.map((año) => (
-                    <option key={año} value={año}>
-                      {año}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="block text-xs font-semibold text-gray-700 mb-1">Mes</label>
-                <select
-                  name="mes"
-                  value={filtros.mes}
-                  onChange={handleFiltroChange}
-                  className="w-full px-2 py-1 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
-                >
-                  {meses.map((mes) => (
-                    <option key={mes.value} value={mes.value}>
-                      {mes.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            </div>
-            <div className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
-              <span className="font-medium">Tip:</span> Seleccione el período
-            </div>
-          </div>
-        </div>
 
-        {/* Reportes compactos */}
-        <div className="flex-1 overflow-auto p-3 sm:p-4">
-          <div className="grid gap-2 sm:gap-3">
-            {reportes.map((reporte) => (
-              <div
-                key={reporte.id}
-                className="group bg-white border border-gray-200 rounded-lg p-3 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-1"
-              >
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
-                  <div className="flex items-start space-x-3 flex-1 min-w-0">
-                    <div
-                      className={`flex-shrink-0 w-8 h-8 bg-gradient-to-r ${reporte.color} rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform duration-200`}
+
+        {seccion === "mensual" && (
+          <div>
+            <div className="p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                <div className="grid grid-cols-2 gap-3 flex-1 max-w-sm">
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">Año</label>
+                    <select
+                      name="año"
+                      value={filtros.año}
+                      onChange={handleFiltroChange}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
                     >
-                      {reporte.icon}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-sm font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
-                        {reporte.titulo}
-                      </h3>
-                      <p className="text-xs text-gray-600 mb-2 line-clamp-1">{reporte.descripcion}</p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-xs text-gray-500 flex items-center space-x-1 bg-gray-100 px-2 py-0.5 rounded-md">
-                          <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      {añosRecientes.map((año) => (
+                        <option key={año} value={año}>
+                          {año}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">Mes</label>
+                    <select
+                      name="mes"
+                      value={filtros.mes}
+                      onChange={handleFiltroChange}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
+                    >
+                      {meses.map((mes) => (
+                        <option key={mes.value} value={mes.value}>
+                          {mes.label}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
+                  <span className="font-medium">Tip:</span> Seleccione el período
+                </div>
+              </div>
+              <div className="flex items-center space-x-2 text-xs text-gray-500">
+                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  />
+                </svg>
+                <span>
+                  Período: {meses.find((m) => m.value === filtros.mes)?.label} {filtros.año}
+                </span>
+              </div>
+            </div>
+
+            <div className="flex-1 overflow-auto p-3 sm:p-4">
+              <div className="grid gap-2 sm:gap-3">
+                {reportes.map((reporte) => (
+                  <div
+                    key={reporte.id}
+                    className="group bg-white border border-gray-200 rounded-lg p-3 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
+                      <div className="flex items-start space-x-3 flex-1 min-w-0">
+                        <div
+                          className={`flex-shrink-0 w-8 h-8 bg-gradient-to-r ${reporte.color} rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform duration-200`}
+                        >
+                          {reporte.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                            {reporte.titulo}
+                          </h3>
+                          <p className="text-xs text-gray-600 mb-2 line-clamp-1">{reporte.descripcion}</p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs text-gray-500 flex items-center space-x-1 bg-gray-100 px-2 py-0.5 rounded-md">
+                              <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                              <span>{reporte.fecha}</span>
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-medium border border-red-200">
+                              {reporte.tipo}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1 lg:flex-nowrap lg:ml-3">
+                        <button
+                          onClick={() => abrirModalConPDF(reporte.tipoAPI)}
+                          className="flex-1 lg:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path
                               strokeLinecap="round"
                               strokeLinejoin="round"
                               strokeWidth={2}
-                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
                             />
                           </svg>
-                          <span>{reporte.fecha}</span>
-                        </span>
-                        <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-medium border border-red-200">
-                          {reporte.tipo}
-                        </span>
+                          <span>Ver</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleDescargar(reporte.tipoAPI)}
+                          className="flex-1 lg:flex-none bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          <span>Descargar</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleImprimir(reporte.tipoAPI)}
+                          className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white p-1 rounded-md shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                          title="Imprimir"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                            />
+                          </svg>
+                        </button>
                       </div>
                     </div>
                   </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
 
-                  <div className="flex flex-wrap gap-1 lg:flex-nowrap lg:ml-3">
-                    <button
-                      onClick={() => abrirModalConPDF(reporte.tipoAPI)}
-                      className="flex-1 lg:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
+        {seccion === "anual" && (
+          <div>
+            <div className="p-3 sm:p-4 bg-gradient-to-r from-gray-50 to-slate-50 border-b border-gray-200 flex-shrink-0">
+              <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-end">
+                <div className="grid grid-cols-2 gap-3 flex-1 max-w-sm">
+                  <div >
+                    <label className="block text-xs font-semibold text-gray-700 mb-1">Año</label>
+                    <select
+                      name="año"
+                      value={filtros.año}
+                      onChange={handleFiltroChange}
+                      className="w-full px-2 py-1 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 bg-white"
                     >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                      <span>Ver</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleDescargar(reporte.tipoAPI)}
-                      className="flex-1 lg:flex-none bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                        />
-                      </svg>
-                      <span>Descargar</span>
-                    </button>
-
-                    <button
-                      onClick={() => handleImprimir(reporte.tipoAPI)}
-                      className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white p-1 rounded-md shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
-                      title="Imprimir"
-                    >
-                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                        />
-                      </svg>
-                    </button>
+                      {añosRecientes.map((año) => (
+                        <option key={año} value={año}>
+                          {año}
+                        </option>
+                      ))}
+                    </select>
+                    <div className="mt-1 text-xs text-gray-500 bg-blue-50 px-2 py-1 rounded-md border border-blue-200">
+                      <span className="font-medium">Tip:</span> Seleccione el Año
+                    </div>
                   </div>
                 </div>
               </div>
-            ))}
+            </div>
+
+            <div className="flex-1 overflow-auto p-3 sm:p-4">
+              <div className="grid gap-2 sm:gap-3">
+                {reportesAnual.map((reporte) => (
+                  <div
+                    key={reporte.id}
+                    className="group bg-white border border-gray-200 rounded-lg p-3 hover:shadow-lg hover:border-gray-300 transition-all duration-300 transform hover:-translate-y-1"
+                  >
+                    <div className="flex flex-raw lg:flex-row lg:items-center lg:justify-between space-y-2 lg:space-y-0">
+                      <div className="flex items-start space-x-3 flex-1 min-w-0">
+                        <div
+                          className={`flex-shrink-0 w-8 h-8 bg-gradient-to-r ${reporte.color} rounded-lg flex items-center justify-center text-white shadow-md group-hover:scale-110 transition-transform duration-200`}
+                        >
+                          {reporte.icon}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h3 className="text-sm font-bold text-gray-800 mb-1 group-hover:text-blue-600 transition-colors duration-200 line-clamp-2">
+                            {reporte.titulo}
+                          </h3>
+                          <p className="text-xs text-gray-600 mb-2 line-clamp-1">{reporte.descripcion}</p>
+                          <div className="flex flex-wrap items-center gap-2">
+                            <span className="text-xs text-gray-500 flex items-center space-x-1 bg-gray-100 px-2 py-0.5 rounded-md">
+                              <svg className="w-2 h-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                                />
+                              </svg>
+                              <span>{reporte.fecha}</span>
+                            </span>
+                            <span className="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-800 font-medium border border-red-200">
+                              {reporte.tipo}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex flex-wrap gap-1 lg:flex-nowrap lg:ml-3">
+                        <button
+                          onClick={() => abrirModalConPDFAnual()}
+                          className="flex-1 lg:flex-none bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                          <span>Ver</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleDescargarAnual()}
+                          className="flex-1 lg:flex-none bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-3 py-1 rounded-md text-xs font-medium shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center space-x-1"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                          </svg>
+                          <span>Descargar</span>
+                        </button>
+
+                        <button
+                          onClick={() => handleImprimirAnual()}
+                          className="bg-gradient-to-r from-gray-500 to-gray-600 hover:from-gray-600 hover:to-gray-700 text-white p-1 rounded-md shadow-md hover:shadow-lg transition-all duration-200 flex items-center justify-center"
+                          title="Imprimir"
+                        >
+                          <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                            />
+                          </svg>
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
           </div>
-        </div>
+        )}
+
+
+
       </div>
     </div>
   )

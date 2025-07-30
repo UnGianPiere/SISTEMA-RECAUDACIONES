@@ -1,5 +1,5 @@
 "use client"
-import { useState, useEffect } from "react"
+import { useState, useEffect, use } from "react"
 import { useNavigate } from "react-router-dom"
 import { useLocation } from "react-router-dom"
 import { TupaRegistroModal } from "../components/modals/TupaRegistroModal"
@@ -21,6 +21,8 @@ function TupaSeccion() {
   const [modalGuardar,setModalGuardar]=useState(false)
   const [dataImpresion,setDataImpresion]=useState([])
 
+
+
   const API = import.meta.env.VITE_API_URL
 
   const handleModalImprimir =()=>{
@@ -38,14 +40,13 @@ function TupaSeccion() {
       alert("Debe agregar al menos un servicio antes de guardar")
       return
     }
-
     const Comprobante = generarComprobanteIngreso()
     const detalles = generarDetalles()
+    console.log(detalles);
     const idComprobante = Comprobante.numeroregistro
     const monto = detalles.reduce((total, item) => {
       return total + item.importe * item.cantidad
     }, 0)
-    console.log(monto)
     try {
       await axios.post(`${API}/api/comprobantes/crear`, {
         comprobante: Comprobante,
@@ -60,12 +61,15 @@ function TupaSeccion() {
     }
   }
 
-  const generarComprobanteIngreso = () => {
+const generarComprobanteIngreso = () => {
     const data = datosRegistro
+    const anio= new Date().getFullYear()
+    const nuevoIdString=data.ultimoreg+`-${anio}`
+    const nuevoNumeroRegistro=data.numeroRecibo+`-${anio}`
     const isRuc = data.tipoDocumento === "ruc"
     return {
-      _id: data.ultimoreg,
-      numeroregistro: data.numeroRecibo,
+      _id: nuevoIdString,
+      numeroregistro: nuevoNumeroRegistro,
       serie: 4,
       nombre: data.nombre,
       direccion: data.direccion,
@@ -79,10 +83,13 @@ function TupaSeccion() {
     }
   }
 
-  const generarDetalles = () => {
+
+const generarDetalles = () => {
     const data = tablaData
+    const anio= new Date().getFullYear()
+    const nuevoIdString=datosRegistro.ultimoreg+`-${anio}`
     return data.map((item) => ({
-      ingresoId: datosRegistro.ultimoreg,
+      ingresoId: nuevoIdString,
       tupaId: item._id,
       cantidad: item.cantidad,
       importe: item.importe,
@@ -180,7 +187,7 @@ function TupaSeccion() {
           </div>
         </div>
 
-        {/* Formulario compacto */}
+        
         <section className="p-3 sm:p-4 border-b border-gray-200 bg-gradient-to-r from-gray-50 to-slate-50">
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-3">
             <div className="space-y-1">

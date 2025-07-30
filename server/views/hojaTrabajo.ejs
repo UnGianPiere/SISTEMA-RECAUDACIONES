@@ -77,10 +77,10 @@
             <!-- simulacion de lo que debe de ir-->
         <% reportes.forEach(reporte => { %>
             <tr>
-                <td class="invisible">00<%= reporte._id %></td>
+                <td class="invisible"><%= reporte._id.split('-')[0].padStart(4, '0'); %></td>
                 <td class="invisible">ARCHIVO</td>
                 <td class="invisible"><%= reporte.fecha.toISOString().substring(0, 10).split('-').reverse().join('/') %></td>
-                <td class="invisible">00<%= reporte._id %></td>
+                <td class="invisible"><%= reporte._id.split('-')[0].padStart(4, '0'); %></td>
                 <td class="invisible" style="text-align: right;"><%= reporte.total.toFixed(2) %></td>
                 <td class="invisible" style="text-align: right;"><%= reporte.total.toFixed(2) %></td>
             </tr>

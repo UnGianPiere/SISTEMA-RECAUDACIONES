@@ -25,14 +25,13 @@ const obtenerReporteMensual2 = async (req, res) => {
 };
 
 
-
-
 const obtenerDatosReporteMensual = async (anio, mes) => {
     const anioNum = parseInt(anio);
     const mesNum = parseInt(mes);
 
-    const inicioMes = new Date(anioNum, mesNum - 1, 1);
-    const finMes = new Date(anioNum, mesNum, 0, 23, 59, 59, 999);
+    // Fechas generadas en UTC sin desfasar por zona horaria
+    const inicioMes = new Date(Date.UTC(anioNum, mesNum - 1, 1, 0, 0, 0));
+    const finMes = new Date(Date.UTC(anioNum, mesNum, 0, 23, 59, 59, 999));
 
     const datos = await ReporteDiario.find({
         fecha: {
@@ -49,8 +48,8 @@ const obtenerDatosReporteMensual2 = async (anio, mes) => {
     const anioNum = parseInt(anio);
     const mesNum = parseInt(mes);
 
-    const inicioMes = new Date(anioNum, mesNum - 1, 1);
-    const finMes = new Date(anioNum, mesNum, 0, 23, 59, 59, 999);
+    const inicioMes = new Date(Date.UTC(anioNum, mesNum - 1, 1, 0, 0, 0));
+    const finMes = new Date(Date.UTC(anioNum, mesNum, 0, 23, 59, 59, 999));
 
     const reportes = await ReporteDiario.find({
         fecha: {
@@ -86,25 +85,43 @@ const obtenerDatosReporteMensual2 = async (anio, mes) => {
 };
 
 
-async function datosPDFMensual(mes,anio) {
+async function datosPDFMensual(mes, anio) {
     const anioNum = parseInt(anio);
-        const mesNum = parseInt(mes);
+    const mesNum = parseInt(mes);
 
-        // Crear rango de fechas del mes
-        const inicioMes = new Date(anioNum, mesNum - 1, 1);
-        const finMes = new Date(anioNum, mesNum, 0, 23, 59, 59, 999); // Último día del mes
+    // Crear rango de fechas del mes
+    const inicioMes = new Date(Date.UTC(anioNum, mesNum - 1, 1));
+    const finMes = new Date(Date.UTC(anioNum, mesNum, 0, 23, 59, 59, 999));
+    const datosReporte = await ReporteDiario.find({
+        fecha: {
+            $gte: inicioMes,
+            $lte: finMes
+        }
+    });
+    // Sumar los totales de cada reporte diario
+    const sumaTotal = datosReporte.reduce((total, reporte) => {
+        return total + (reporte.total || 0); // Asegurarse de que 'total' exista
+    }, 0);
+    return { sumaTotal };
+}
 
-        const datosReporte = await ReporteDiario.find({
-            fecha: {
-                $gte: inicioMes,
-                $lte: finMes
-            }
-        });
-        // Sumar los totales de cada reporte diario
-        const sumaTotal = datosReporte.reduce((total, reporte) => {
-            return total + (reporte.total || 0); // Asegurarse de que 'total' exista
-        }, 0);
-        return { sumaTotal };
+
+async function datosPDFAnual(anio) {
+    const anioNum = parseInt(anio);
+
+    // Crear rango de fechas del año completo (1 enero a 31 diciembre)
+    const inicioAnio = new Date(Date.UTC(anioNum, 0, 1)); // 1 enero
+    const finAnio = new Date(Date.UTC(anioNum, 11, 31, 23, 59, 59, 999)); // 31 diciembre
+
+    const datosReporte = await ReporteDiario.find({
+        fecha: {
+            $gte: inicioAnio,
+            $lte: finAnio
+        }
+    });
+
+
+    return datosReporte;
 }
 
 
@@ -115,4 +132,5 @@ module.exports = {
     datosPDFMensual,
     obtenerDatosReporteMensual,
     obtenerDatosReporteMensual2,
+    datosPDFAnual
 };

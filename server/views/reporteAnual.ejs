@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+</head>
+<style>
+    html {
+        font-family: Arial, Helvetica, sans-serif;
+        font-size: 12px;
+    }
+
+    p {
+        padding: 0;
+        margin: 0;
+    }
+
+    th,
+    td {
+        border: 1px solid black;
+        padding: 5px;
+    }
+
+    table {
+        border-collapse: collapse;
+    }
+
+    .invisible {
+        border: 0px;
+    }
+
+    .sinBordes {
+        border-left: 0px;
+        border-right: 0px;
+    }
+</style>
+
+<body>
+    <div>
+        <p style="font-size: 11px">Gobierno Regional Junín</p>
+        <p style="font-size: 11px">ARCHIVO REGIONAL JUNIN</p>
+    </div>
+    <div style="
+        padding: 0;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        font-weight: bold;
+        font-size: 13px;
+      ">
+        <p>SEGUIMIENTO DE RECAUDACION DE INGRESOS</p>
+        <p>AÑO: <%=anio%>
+        </p>
+    </div>
+
+    <div>
+        <pre style="font-family: Arial, Helvetica, sans-serif; font-size: 12px">
+        <strong>Fuente Fto  : </strong> Recursos Directamente Recaudados
+        <strong>Sector         : </strong> ARCHIVO REGIONAL JUNIN
+        </pre>
+    </div>
+
+    <div style="
+        width: 100%;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+      ">
+        <table>
+            <thead>
+                <tr>
+                    <th>Partida</th>
+                    <th style="width: 15%">Descripción</th>
+                    <th style="width: 6%">TOTAL</th>
+                    <th style="width: 6%">Enero</th>
+                    <th style="width: 6%">Febrero</th>
+                    <th style="width: 6%">Marzo</th>
+                    <th style="width: 6%">Abril</th>
+                    <th style="width: 6%">Mayo</th>
+                    <th style="width: 6%">Junio</th>
+                    <th style="width: 6%">Julio</th>
+                    <th style="width: 6%">Agosto</th>
+                    <th style="width: 6%">Setiembre</th>
+                    <th style="width: 6%">Octubre</th>
+                    <th style="width: 6%">Noviembre</th>
+                    <th style="width: 6%">Diciembre</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="font-size: 9px" class="invisible">1.0.0</td>
+                    <td class="invisible" style="font-size: 9px">
+                        INGRESOS PRESUPUESTARIOS
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.total.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.enero.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.febrero.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.marzo.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.abril.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.mayo.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.junio.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.julio.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.agosto.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.setiembre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.octubre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.noviembre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes">
+                        <%= montosAnual.diciembre.toFixed(2) %>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="font-size: 9px" class="invisible">1.3.0</td>
+                    <td class="invisible" style="font-size: 9px">
+                        VENTA DE BIENES, SERVICIOS Y DERECHOS
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.total.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.enero.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.febrero.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.marzo.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.abril.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.mayo.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.junio.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.julio.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.agosto.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.setiembre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.octubre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.noviembre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.diciembre.toFixed(2) %></td>
+                </tr>
+                <tr>
+                    <td style="font-size: 9px" class="invisible">1.3</td>
+                    <td class="invisible" style="font-size: 9px">
+                        VENTA DE BIENES, SERVICIOS Y DERECHOS
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.total.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.enero.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.febrero.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.marzo.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.abril.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.mayo.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.junio.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.julio.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.agosto.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.setiembre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.octubre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.noviembre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="sinBordes"><%= montosAnual.diciembre.toFixed(2) %></td>
+                </tr>
+                <tr>
+                    <td colspan="2" style="text-align: center; letter-spacing: 2px; border-right: 0px">
+                        Totales:
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.total.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.enero.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.febrero.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.marzo.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.abril.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.mayo.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.junio.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.julio.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.agosto.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.setiembre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.octubre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; border-right: 0px; font-size: 9px">
+                        <%= montosAnual.noviembre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-left: 0px; font-size: 9px"><%= montosAnual.diciembre.toFixed(2) %></td>
+                </tr>
+                <tr>
+                    <td class="invisible"></td>
+                    <td style="font-size: 9px" class="invisible">
+                        INGRESOS PRESUPUESTARIOS
+                    </td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.total.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.enero.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.febrero.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.marzo.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.abril.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.mayo.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.junio.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.julio.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.agosto.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.setiembre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.octubre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.noviembre.toFixed(2) %></td>
+                    <td style="text-align: right; font-size: 9px" class="invisible"><%= montosAnual.diciembre.toFixed(2) %></td>
+                </tr>
+                <tr>
+                    <td style="font-size: 9px" class="invisible">1.3</td>
+                    <td style="font-size: 9px" class="invisible">
+                        VENTA DE BIENES, SERVICIOS Y DERECHOS
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.total.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.enero.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.febrero.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.marzo.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.abril.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.mayo.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.junio.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.julio.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.agosto.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.setiembre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.octubre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.noviembre.toFixed(2) %>
+                    </td>
+                    <td style="text-align: right; border-top: 1px solid black; font-size: 9px" class="invisible">
+                        <%= montosAnual.diciembre.toFixed(2) %>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+
+</html>

@@ -82,15 +82,40 @@ const obtenerReportes = async (req, res) => {
 };
 
 const obtenerUltimoReporte = async (req, res) => {
+  const año = req.params.año;
+
   try {
-    const ultimo = await ReporteDiario.findOne().sort({ _id: -1 });
-    if (!ultimo) return res.status(404).json({ error: 'No hay reportes registrados' });
+    const [ultimo] = await ReporteDiario.aggregate([
+      {
+        $addFields: {
+          correlativo: {
+            $toInt: { $arrayElemAt: [{ $split: ["$_id", "-"] }, 0] }
+          },
+          anioExtraido: {
+            $arrayElemAt: [{ $split: ["$_id", "-"] }, 1]
+          }
+        }
+      },
+      {
+        $match: { anioExtraido: año }
+      },
+      {
+        $sort: { correlativo: -1 }
+      },
+      {
+        $limit: 1
+      }
+    ]);
+
+    if (!ultimo) {
+      return res.status(404).json({ error: `No hay reportes para el año ${año}` });
+    }
+
     res.json(ultimo);
   } catch (error) {
     res.status(500).json({ error: 'Error al buscar reporte', detalles: error.message });
   }
 };
-
 
 
 // Obtener un reporte por ID
@@ -106,9 +131,11 @@ const obtenerReportePorId = async (req, res) => {
 
 
 const datosPDF = async (id) => {
-  if (isNaN(id)) throw new Error('ID inválido');
+  if (!id || typeof id !== 'string' || !id.includes('-')) {
+    throw new Error('ID inválido');
+  }
 
-  const reporte = await ReporteDiario.findById(id);
+  const reporte = await ReporteDiario.findOne({ _id: id });
   if (!reporte) throw new Error('Reporte no encontrado');
 
   const comprobantes = await ComprobanteIngreso.find({ numeroregistro: id });
@@ -125,11 +152,10 @@ const datosPDF = async (id) => {
 
   return { reporte, comprobantes: comprobantesConDetalles };
 };
-
 //  Controlador HTTP que usa la función reutilizable
 const obtenerReportePorIdconIngresos = async (req, res) => {
   try {
-    const id = parseInt(req.params.id);
+    const id = (req.params.id);
     const datos = await datosPDF(id);
     res.json(datos);
   } catch (error) {
