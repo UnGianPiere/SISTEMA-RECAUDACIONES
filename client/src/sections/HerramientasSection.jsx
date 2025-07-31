@@ -5,6 +5,8 @@ import { useConfig } from '../app/config/useConfig'
 
 function HerramientasSection() {
   const [activeTab, setActiveTab] = useState("config")
+  const [previewTheme, setPreviewTheme] = useState("light")
+  const [isBackupLoading, setIsBackupLoading] = useState(false)
   const { selectedYear, setSelectedYear, theme, setTheme } = useConfig();
 
   const API = import.meta.env.VITE_API_URL
@@ -15,6 +17,7 @@ function HerramientasSection() {
   }
 
   const descargarBackup = async () => {
+    setIsBackupLoading(true);
     try {
       const response = await axios.get(`${API}/api/backup`, {
         responseType: 'blob', // importante para recibir el archivo como blob
@@ -36,6 +39,8 @@ function HerramientasSection() {
       window.URL.revokeObjectURL(url);
     } catch (error) {
       console.error('Error al descargar el backup:', error);
+    } finally {
+      setIsBackupLoading(false);
     }
   };
 
@@ -101,14 +106,34 @@ function HerramientasSection() {
                   </div>
                   <div>
                     <label className="block text-xs font-medium text-gray-700 mb-1">Tema del Sistema</label>
-                    <select
-                      value={theme}
-                      onChange={(e) => setTheme(e.target.value)}
-                      className="w-full px-2 py-1 border border-gray-300 rounded-md focus:ring-1 focus:ring-orange-500 focus:border-orange-500 text-xs">
-                      <option value="light">Tema Claro</option>
-                      <option value="dark">Tema Oscuro</option>
-                      <option value="system">Usar Tema del Sistema</option>
-                    </select>
+                    <div className="flex space-x-2">
+                      <button
+                        onClick={() => setTheme('light')}
+                        className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+                          theme === 'light'
+                            ? 'bg-orange-500 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+                        }`}
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+                        </svg>
+                        <span>Claro</span>
+                      </button>
+                      <button
+                        onClick={() => setTheme('dark')}
+                        className={`flex-1 px-3 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center justify-center space-x-1 ${
+                          theme === 'dark'
+                            ? 'bg-orange-500 text-white shadow-md'
+                            : 'bg-gray-100 text-gray-700 hover:bg-gray-200 border border-gray-300'
+                        }`}
+                      >
+                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                        <span>Oscuro</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -116,12 +141,72 @@ function HerramientasSection() {
               <div className="bg-white rounded-lg border border-gray-200 p-3">
                 <h4 className="text-sm font-bold text-gray-800 mb-2">Vista Previa del Tema</h4>
                 <div className="space-y-2 p-3 bg-gray-100 rounded-lg">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-medium text-gray-700">Vista previa del tema seleccionado</span>
-                    <div className="w-4 h-4 bg-orange-500 rounded-full"></div>
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-medium text-gray-700">Vista previa del tema</span>
+                    <div className="flex items-center space-x-2">
+                      <div className={`w-3 h-3 rounded-full ${previewTheme === 'light' ? 'bg-orange-500' : 'bg-blue-500'}`}></div>
+                      <span className="text-xs text-gray-600 capitalize">{previewTheme === 'light' ? 'Claro' : 'Oscuro'}</span>
+                    </div>
                   </div>
-                  <div className="h-20 bg-white rounded-md border border-gray-200 flex items-center justify-center">
-                    <span className="text-xs text-gray-500">Previsualización del tema</span>
+                  
+                  {/* Botón para cambiar tema de la vista previa */}
+                  <div className="flex justify-center mb-2">
+                    <button
+                      onClick={() => setPreviewTheme(previewTheme === 'light' ? 'dark' : 'light')}
+                      className="px-4 py-2 rounded-md text-xs font-medium transition-all duration-200 flex items-center space-x-2 bg-gray-200 text-gray-700 hover:bg-gray-300 border border-gray-300"
+                    >
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
+                      </svg>
+                      <span>Cambiar Vista Previa</span>
+                    </button>
+                  </div>
+                  
+                  {/* Vista previa pequeña y siempre visible */}
+                  <div className={`h-20 rounded-md border transition-all duration-300 ${
+                    previewTheme === 'light' 
+                      ? 'bg-white border-gray-200' 
+                      : 'bg-gray-800 border-gray-600'
+                  }`}>
+                    <div className="p-2 h-full">
+                      {/* Mini interfaz */}
+                      <div className="flex space-x-1 h-full">
+                        {/* Mini sidebar */}
+                        <div className={`w-8 rounded ${
+                          previewTheme === 'light' ? 'bg-blue-500' : 'bg-blue-600'
+                        } flex items-center justify-center`}>
+                          <span className="text-xs text-white font-bold">S</span>
+                        </div>
+                        
+                        {/* Mini contenido */}
+                        <div className={`flex-1 rounded ${
+                          previewTheme === 'light' ? 'bg-gray-100' : 'bg-gray-700'
+                        } p-1`}>
+                          <div className="flex items-center space-x-1 mb-1">
+                            <div className={`w-2 h-2 rounded ${
+                              previewTheme === 'light' ? 'bg-gray-300' : 'bg-gray-600'
+                            }`}></div>
+                            <span className={`text-xs font-medium ${
+                              previewTheme === 'light' ? 'text-gray-700' : 'text-gray-300'
+                            }`}>Mini</span>
+                          </div>
+                          
+                          {/* Mini botones */}
+                          <div className="flex space-x-1">
+                            <div className={`w-4 h-3 rounded text-xs flex items-center justify-center ${
+                              previewTheme === 'light' 
+                                ? 'bg-blue-500 text-white' 
+                                : 'bg-blue-600 text-white'
+                            }`}>B</div>
+                            <div className={`w-4 h-3 rounded text-xs flex items-center justify-center ${
+                              previewTheme === 'light' 
+                                ? 'bg-gray-300 text-gray-600' 
+                                : 'bg-gray-600 text-gray-300'
+                            }`}>B</div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -148,8 +233,28 @@ function HerramientasSection() {
                 <p className="text-blue-700 mb-2 text-xs">Genere una copia de seguridad completa</p>
                 <button
                   onClick={descargarBackup}
-                  className="w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-md text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200">
-                  Crear Respaldo Ahora
+                  disabled={isBackupLoading}
+                  className={`w-full bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white px-3 py-2 rounded-md text-xs font-medium shadow-sm hover:shadow-md transition-all duration-200 flex items-center justify-center space-x-2 ${
+                    isBackupLoading ? 'opacity-75 cursor-not-allowed' : ''
+                  }`}>
+                  {isBackupLoading ? (
+                    <>
+                      <div className="animate-spin rounded-full h-3 w-3 border-b-2 border-white"></div>
+                      <span>Generando Backup...</span>
+                    </>
+                  ) : (
+                    <>
+                      <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                        />
+                      </svg>
+                      <span>Crear Respaldo Ahora</span>
+                    </>
+                  )}
                 </button>
             </div>
           </div>

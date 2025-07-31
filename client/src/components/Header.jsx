@@ -38,6 +38,7 @@ function Header({ isMobileOpen, setIsMobileOpen }) {
 
           {/* Información de usuario - Desktop */}
           <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
+            
             <div className="text-right">
               <span className="text-sm block font-medium">Usuario: Admin</span>
               <span className="text-xs text-emerald-300 flex items-center justify-end">
@@ -55,6 +56,7 @@ function Header({ isMobileOpen, setIsMobileOpen }) {
         {isMenuOpen && (
           <div className="z-20 lg:hidden mt-4 pt-4 border-t border-slate-500 animate-fadeIn">
             <div className="flex flex-col space-y-3">
+              
               <div className="text-center sm:text-left">
                 <span className="text-sm font-medium">Usuario: Admin</span>
                 <div className="text-xs text-emerald-300 flex items-center justify-center sm:justify-start mt-1">

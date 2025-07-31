@@ -22,8 +22,21 @@ export const ConfigProvider = ({ children }) => {
 
     useEffect(() => {
         localStorage.setItem("appConfig", JSON.stringify({ selectedYear, theme }));
-        document.body.className = theme;
+        applyTheme(theme);
     }, [selectedYear, theme]);
+
+    const applyTheme = (selectedTheme) => {
+        const root = document.documentElement;
+        
+        // Remover clases de tema anteriores
+        root.classList.remove('light', 'dark');
+        
+        // Aplicar el tema seleccionado
+        root.classList.add(selectedTheme);
+        
+        // Aplicar clases al body también para compatibilidad
+        document.body.className = selectedTheme;
+    };
 
     return (
         <ConfigContext.Provider value={{ selectedYear, setSelectedYear, theme, setTheme }}>
