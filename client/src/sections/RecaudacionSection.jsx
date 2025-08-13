@@ -73,9 +73,9 @@ function RecaudacionSection() {
   const handleConfirmar = async () => {
     const idnuevo = parseInt(nuevoRecibo.split('-')[0]) + 1
     const anio = new Date().getFullYear();
-    const idnuevoString=idnuevo+`-${anio}`
+    const idnuevoString = idnuevo + `-${anio}`
     const dataNuevoRecibo = {
-      _id:  idnuevoString,
+      _id: idnuevoString,
       ctapa1: "1101.0101",
       ctapa2: "1101.0101",
       total: 0,
@@ -176,7 +176,7 @@ function RecaudacionSection() {
         const data = await fetch(`${urlUri}/api/comprobantes/ultimo`)
         const json = await data.json()
         setUltimoRegistro(
-          parseInt(json._id.split('-')[0])+ 1)
+          parseInt(json._id.split('-')[0]) + 1)
       } catch (error) {
         console.error(`El error es: ${error}`)
       }
@@ -256,7 +256,7 @@ function RecaudacionSection() {
   }
 
   const handleAnulacionConfirmada = () => {
-    const id=datosSeleccion.id;
+    const id = datosSeleccion.id;
     const anular = async () => {
       try {
         await axios.put(`${urlUri}/api/comprobantes/anular/${id}`)
@@ -357,6 +357,59 @@ function RecaudacionSection() {
     }
   }
 
+
+  const handleDate = (e) => {
+    const { value } = e.target;
+    console.log(value); // YYYY-MM-DD
+    const numeroFormateado = formData.numeroRecibo.split('-')[0] + `-${selectedYear}`
+    const updateDate = async () => {
+      axios.put(`${urlUri}/api/reporte-diario/${numeroFormateado}`,
+        {
+          fecha: new Date(value)
+        }
+      )
+    }
+    updateDate()
+    navigate(0)
+  };
+
+  const [fechaEditable, setFechaEditable] = useState(
+    resultado.fecha
+      ? new Date(resultado.fecha).toISOString().split("T")[0]
+      : ""
+  );
+
+  const [toast, setToast] = useState(null);
+
+  const showToast = (msg) => {
+    // 1. Guarda el mensaje en un estado
+    setToast(msg);
+
+    // 2. Espera 3 segundos y lo borra (oculta el toast)
+    setTimeout(() => setToast(null), 3000);
+  };
+
+  const handleDateSubmit = async () => {
+    const numeroFormateado = formData.numeroRecibo.split('-')[0] + `-${selectedYear}`
+    try {
+      await axios.put(
+        `${urlUri}/api/reporte-diario/${numeroFormateado}`,
+        { fecha: fechaEditable }
+      );
+      showToast("✅ Fecha actulizada")
+    } catch (err) {
+      showToast("❌ Error al actualizar la fecha: vuelva a intentarlo", err);
+    }
+  };
+
+  useEffect(() => {
+    setFechaEditable(
+      resultado.fecha
+        ? new Date(resultado.fecha).toISOString().split("T")[0]
+        : ""
+    );
+  }, [resultado.fecha]);
+
   useEffect(() => {
     cargarUltimoRIC()
   }, [])
@@ -370,6 +423,11 @@ function RecaudacionSection() {
         message="¿Estas seguro de crear un nuevo recibo?"
       />
 
+      {toast && (
+        <div className="fixed top-4 right-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white text-xs px-4 py-2 rounded-lg shadow-lg z-50 border border-slate-600 animate-fadeIn">
+          {toast}
+        </div>
+      )}
 
       {loadingPDF && (
         <div className="fixed  inset-0 h-full w-full z-100 flex justify-center items-center bg-black/10 flex-col gap-4">
@@ -400,7 +458,7 @@ function RecaudacionSection() {
               alt="Escudo"
             />
             <h2 className="block sm:hidden text-lg font-bold text-gray-800">{selectedYear}</h2>
-            
+
             <h2 className="hidden sm:block text-lg font-bold text-gray-800">Recaudación - {selectedYear}</h2>
           </div>
 
@@ -447,10 +505,16 @@ function RecaudacionSection() {
               <input
                 type="date"
                 name="fecha"
-                value={resultado.fecha ?? ""}
-                onChange={handleInputChange}
+                value={fechaEditable}
+                onChange={(e) => setFechaEditable(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    handleDateSubmit();
+                  }
+                }}
                 className="border border-gray-300 rounded px-1 py-0.5 w-full focus:outline-none focus:ring-1 focus:ring-blue-500"
               />
+
             </div>
             <div className="flex items-center space-x-1">
               <label className="font-medium text-gray-700 min-w-[40px]">Sector</label>
