@@ -14,6 +14,7 @@ const reporteDiarioRoutes = require('./routes/reporteDiarioRouters');
 const pdfRoutes = require('./routes/pdfRoutes');
 const reporteMensualRoutes = require('./routes/reporteMensualRouters');
 const backupRoutes=require('./routes/backupRoutes')
+const authRoutes = require('./routes/authRoutes');
 
 const app = express();
 const PORT = process.env.PORT;
@@ -38,7 +39,7 @@ app.use('/api/reporte-diario', reporteDiarioRoutes);
 app.use('/api/pdf', pdfRoutes);
 app.use('/api/reporte-mensual', reporteMensualRoutes);
 app.use('/api/backup',backupRoutes)
-
+app.use('/api/auth', authRoutes);
 
 // Iniciar servidor
 app.listen(PORT, () => {

@@ -1,9 +1,18 @@
 "use client"
 
 import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import { useAuth } from "../context/AuthContext"
 
 function Header({ isMobileOpen, setIsMobileOpen }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const { logout, user } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/login')
+  }
 
   return (
     <header className="bg-gradient-to-r from-slate-700 via-slate-600 to-slate-700 text-white shadow-xl relative z-10 border-b border-slate-500">
@@ -38,15 +47,16 @@ function Header({ isMobileOpen, setIsMobileOpen }) {
 
           {/* Información de usuario - Desktop */}
           <div className="hidden lg:flex items-center space-x-4 flex-shrink-0">
-            
             <div className="text-right">
-              <span className="text-sm block font-medium">Usuario: Admin</span>
+              <span className="text-sm block font-medium">Usuario: {user?.username}</span>
               <span className="text-xs text-emerald-300 flex items-center justify-end">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full mr-1 animate-pulse"></div>
                 Sesión activa
               </span>
             </div>
-            <button className="bg-slate-500/70 hover:bg-slate-800 px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:shadow-lg border border-slate-400">
+            <button 
+              onClick={handleLogout}
+              className="bg-slate-500/70 hover:bg-slate-800 px-4 py-2 rounded-lg text-sm transition-all duration-200 hover:shadow-lg border border-slate-400">
               Cerrar Sesión
             </button>
           </div>
@@ -58,13 +68,15 @@ function Header({ isMobileOpen, setIsMobileOpen }) {
             <div className="flex flex-col space-y-3">
               
               <div className="text-center sm:text-left">
-                <span className="text-sm font-medium">Usuario: Admin</span>
+                <span className="text-sm font-medium">Usuario: {user?.username}</span>
                 <div className="text-xs text-emerald-300 flex items-center justify-center sm:justify-start mt-1">
                   <div className="w-2 h-2 bg-emerald-400 rounded-full mr-1 animate-pulse"></div>
                   Sesión activa
                 </div>
               </div>
-              <button className="bg-slate-500/70 hover:bg-slate-800 px-4 py-2 rounded-lg text-sm w-full transition-all duration-200 border border-slate-400">
+              <button 
+                onClick={handleLogout}
+                className="bg-slate-500/70 hover:bg-slate-800 px-4 py-2 rounded-lg text-sm w-full transition-all duration-200 border border-slate-400">
                 Cerrar Sesión
               </button>
             </div>
