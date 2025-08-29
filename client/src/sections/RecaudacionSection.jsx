@@ -5,6 +5,7 @@ import GenericModal from "../components/GenericModal"
 import { useNavigate } from "react-router-dom"
 import ConfirmModal from "../components/modals/ModalConfirmacion"
 import { useConfig } from "../app/config/useConfig";
+import ModalGuardar from "../components/modals/ModalGuardarShow"
 
 function RecaudacionSection() {
   const { selectedYear } = useConfig();
@@ -35,6 +36,8 @@ function RecaudacionSection() {
   const [resultado, setResultado] = useState({ fecha: "", total: 0, comprobantes: [] })
   const [nuevoRecibo, setNuevoRecibo] = useState(null)
   const [modalNuevoRecibo, setModalNuevoRecibo] = useState(false)
+  const [modalGuardar,setModalGuardar]=useState(false)
+  const [datosComprobante,setDatosComprobante]=useState([])
 
   const [dataEdit, setDataEdit] = useState({
     nombre: "",
@@ -402,6 +405,43 @@ function RecaudacionSection() {
     }
   };
 
+const handleVerComprobante = async (comprobanteId) => {
+  try {
+    const response = await axios.get(`${urlUri}/api/comprobantes/detalles/${comprobanteId}`);
+    const { comprobante, detalles } = response.data;
+
+    const tupaData = detalles.map(element => ({
+      codigo: element.tupaId._id,
+      descripcion: element.tupaId.descripcion,
+      precUnitario: element.importe,
+      Cantidad: element.cantidad,
+      valorVenta: element.importe * element.cantidad
+    }));
+
+    const total = detalles.reduce((sum, item) => sum + item.importe * item.cantidad, 0);
+
+    const DNIRUC = comprobante.dni && comprobante.dni !== 0 ? comprobante.dni : comprobante.ruc;
+
+    const datos = {
+      nombre: comprobante.nombre,
+      direccion: comprobante.direccion || null,
+      DNIRUC,
+      tupaData,
+      total
+    };
+
+    // Primero setear datos
+    setDatosComprobante(datos);
+
+    // Luego abrir modal
+    setModalGuardar(true);
+
+  } catch (error) {
+    console.error("Error al obtener el comprobante:", error);
+  }
+};
+
+
   useEffect(() => {
     setFechaEditable(
       resultado.fecha
@@ -422,6 +462,8 @@ function RecaudacionSection() {
         onConfirm={handleConfirmar}
         message="¿Estas seguro de crear un nuevo recibo?"
       />
+
+      <ModalGuardar visible={modalGuardar} onClose={() => setModalGuardar(false)} data={datosComprobante}/>
 
       {toast && (
         <div className="fixed top-4 right-4 bg-gradient-to-r from-slate-800 to-slate-900 text-white text-xs px-4 py-2 rounded-lg shadow-lg z-50 border border-slate-600 animate-fadeIn">
@@ -707,7 +749,22 @@ function RecaudacionSection() {
                   >
                     ANULAR
                   </button>
+
+                  <button className="bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white px-2.5 rounded"
+                    onClick={() => handleVerComprobante(datosSeleccion?.id)}
+                  >
+                    <svg width="27px" height="27px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <g id="style=linear">
+                        <g id="eye-open">
+                          <path id="vector" d="M15 12C15 13.6592 13.6592 15 12 15C10.3408 15 9 13.6592 9 12C9 10.3408 10.3408 9 12 9C13.6592 9 15 10.3408 15 12Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                          <path id="vector_2" d="M12 19.27C15.53 19.27 18.82 17.4413 21.11 14.2764C22.01 13.0368 22.01 10.9532 21.11 9.71356C18.82 6.54861 15.53 4.71997 12 4.71997C8.46997 4.71997 5.17997 6.54861 2.88997 9.71356C1.98997 10.9532 1.98997 13.0368 2.88997 14.2764C5.17997 17.4413 8.46997 19.27 12 19.27Z" stroke="#000000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
+                        </g>
+                      </g>
+                    </svg>
+                  </button>
+
                 </>
+
               )}
             </div>
             <div className="text-right">

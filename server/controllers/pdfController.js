@@ -672,6 +672,90 @@ const generarPDFComprobanteCaja = async (req, res) => {
     }
 }
 
+//generar Comprobantes de caja para revisualizar en la tabla
+const generarPDFComprobanteShow = async (req, res) => {
+    const data = req.body
+    let browser;
+    try {
+
+        const totalLetras = numeroALetras(data.total);
+
+        // Fecha y hora Perú (UTC-5)
+        const fechaUTCNow = new Date();
+        const offsetLima = -5 * 60;
+        const fechaPeruNow = new Date(fechaUTCNow.getTime() + offsetLima * 60000);
+        const dia = fechaPeruNow.getUTCDate().toString().padStart(2, '0');
+        const mes = fechaPeruNow.toLocaleString('es-PE', { month: 'long' });
+        const anio = fechaPeruNow.getUTCFullYear().toString().slice(-2);
+        const hora = fechaPeruNow.toLocaleTimeString('es-PE', {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false,
+        });
+
+
+        const datos = {
+            ...data,
+            fecha: {
+                dia,
+                mes,
+                anio,
+                hora
+            },
+            totalLetras,
+        };
+
+        // Ruta a tu plantilla .ejs
+        const templatePath = path.join(__dirname, '../views/comprobanteCaja.ejs');
+        const html = fs.readFileSync(templatePath, 'utf8');
+
+        // Rellenar la plantilla con los datos
+        const htmlRenderizado = ejs.render(html, datos);
+
+        // Generar PDF
+        browser = await puppeteer.launch({
+            headless: true,
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-dev-shm-usage',
+                '--disable-gpu'
+            ]
+        });
+
+        const page = await browser.newPage();
+        await page.setContent(htmlRenderizado, { waitUntil: 'domcontentloaded' });
+        await page.emulateMediaType('screen');
+
+
+        const pdfBuffer = await page.pdf({
+            height: `167mm`,
+            width: `222mm`,  // alto más corto
+            printBackground: false,
+            landscape: true,   // NO usar landscape porque ya ajustamos width/height en horizontal
+            margin: { top: '0mm', bottom: '0mm', left: '0mm', right: '0mm' }
+        });
+
+        // === 4. Enviar PDF como respuesta (inline para ver en navegador/Postman) ===
+        res.set({
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': 'inline; filename=recibo.pdf',
+            'Content-Length': pdfBuffer.length,
+        });
+        res.send(pdfBuffer);
+    } catch (error) {
+        console.error(`El error es ${error}`)
+    }
+    finally {
+        if (browser) {
+            await browser.close().then(() => console.log('Browser closed'));
+        }
+    }
+}
+
+
+
 const generarPDFAnual = async (req, res) => {
     const { anio } = req.params;
     let browser;
@@ -788,5 +872,6 @@ module.exports = {
     generarPDFMensual4,
     generarPDFMensual5,
     generarPDFComprobanteCaja,
-    generarPDFAnual
+    generarPDFAnual,
+    generarPDFComprobanteShow
 };

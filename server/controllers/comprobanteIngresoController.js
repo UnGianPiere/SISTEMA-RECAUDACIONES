@@ -1,6 +1,7 @@
 const ComprobanteIngreso = require('../models/ComprobanteIngreso');
 const ComprobanteDetalle = require('../models/ComprobanteDetalle');
 const ReporteDiario = require('../models/ReporteDiario')
+const Tupa = require('../models/Tupa');
 // Crear comprobante
 exports.createComprobante = async (req, res) => {
     try {
@@ -29,7 +30,6 @@ exports.crearComprobanteConDetalles = async (req, res) => {
         res.status(500).json({ error: "No se pudo guardar." });
     }
 };
-
 
 
 // Obtener todos
@@ -73,6 +73,21 @@ exports.getComprobanteById = async (req, res) => {
         const comp = await ComprobanteIngreso.findById(req.params.id);
         if (!comp) return res.status(404).json({ error: 'No encontrado' });
         res.json(comp);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+};
+
+
+// Obtener por ID con detalle (unico)
+exports.getComprobanteByIdConDetalles = async (req, res) => {
+    try {
+        const comp = await ComprobanteIngreso.findById(req.params.id);
+        if (!comp) return res.status(404).json({ error: 'No encontrado' });
+        const detalles = await ComprobanteDetalle
+            .find({ ingresoId: comp._id })
+            .populate('tupaId'); // aquí se cargan los datos de la tabla Tupa
+        res.json({ comprobante: comp, detalles });
     } catch (err) {
         res.status(500).json({ error: err.message });
     }

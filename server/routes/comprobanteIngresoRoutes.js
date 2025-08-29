@@ -18,6 +18,9 @@ router.post('/crear', controller.crearComprobanteConDetalles);
 //GET el ultimo numero de comprobante
 router.get('/ultimo', controller.getUltimoComprobante);
 
+//GET uno por ID con detalle
+router.get('/detalles/:id', controller.getComprobanteByIdConDetalles);
+
 // GET uno por ID
 router.get('/:id', controller.getComprobanteById);
 

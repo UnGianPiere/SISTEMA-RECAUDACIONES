@@ -11,5 +11,4 @@ router.get('/', controlador.obtenerDetalles);
 router.get('/:id', controlador.obtenerDetallePorId);
 router.put('/:id', controlador.actualizarDetalle);
 router.delete('/:id', controlador.eliminarDetalle);
-
 module.exports = router;
